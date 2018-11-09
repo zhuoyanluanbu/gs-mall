@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.commodity.dao.CommentDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.commodity.po.Comment">
+			<id column="comment_id" jdbcType="BIGINT" property="commentId" />
+			<result column="commodity_id" jdbcType="BIGINT" property="commodityId" />
+			<result column="snapshoot_id" jdbcType="BIGINT" property="snapshootId" />
+			<result column="sku_name" jdbcType="VARCHAR" property="skuName" />
+			<result column="open_id" jdbcType="CHAR" property="openId" />
+			<result column="commentor" jdbcType="VARCHAR" property="commentor" />
+			<result column="commentor_img" jdbcType="VARCHAR" property="commentorImg" />
+			<result column="comment_content" jdbcType="VARCHAR" property="commentContent" />
+			<result column="score" jdbcType="SMALLINT" property="score" />
+			<result column="comment_time" jdbcType="TIMESTAMP" property="commentTime" />
+			<result column="img_uri1" jdbcType="VARCHAR" property="imgUri1" />
+			<result column="img_uri2" jdbcType="VARCHAR" property="imgUri2" />
+			<result column="img_uri3" jdbcType="VARCHAR" property="imgUri3" />
+			<result column="replyer" jdbcType="VARCHAR" property="replyer" />
+			<result column="reply_content" jdbcType="VARCHAR" property="replyContent" />
+			<result column="reply_time" jdbcType="TIMESTAMP" property="replyTime" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		comment_id
+		,commodity_id
+		,snapshoot_id
+		,sku_name
+		,open_id
+		,commentor
+		,commentor_img
+		,comment_content
+		,score
+		,comment_time
+		,img_uri1
+		,img_uri2
+		,img_uri3
+		,replyer
+		,reply_content
+		,reply_time
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_comment 
+    where comment_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.commodity.po.Comment" useGeneratedKeys="true" keyColumn="comment_id" keyProperty="commentId">
+    insert into gs_comment(
+				commodity_id
+				,snapshoot_id
+				,sku_name
+				,open_id
+				,commentor
+				,commentor_img
+				,comment_content
+				,score
+				,comment_time
+				,img_uri1
+				,img_uri2
+				,img_uri3
+				,replyer
+				,reply_content
+				,reply_time
+	)
+	values(
+			#{commodityId,jdbcType=BIGINT}
+			,#{snapshootId,jdbcType=BIGINT}
+			,#{skuName,jdbcType=VARCHAR}
+			,#{openId,jdbcType=CHAR}
+			,#{commentor,jdbcType=VARCHAR}
+			,#{commentorImg,jdbcType=VARCHAR}
+			,#{commentContent,jdbcType=VARCHAR}
+			,#{score,jdbcType=SMALLINT}
+			,#{commentTime,jdbcType=TIMESTAMP}
+			,#{imgUri1,jdbcType=VARCHAR}
+			,#{imgUri2,jdbcType=VARCHAR}
+			,#{imgUri3,jdbcType=VARCHAR}
+			,#{replyer,jdbcType=VARCHAR}
+			,#{replyContent,jdbcType=VARCHAR}
+			,#{replyTime,jdbcType=TIMESTAMP}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.commodity.po.Comment">
+    update gs_comment 
+    <set>
+			 <if test="commodityId != null">
+				commodity_id = #{commodityId,jdbcType=BIGINT},
+			 </if>
+			 <if test="snapshootId != null">
+				snapshoot_id = #{snapshootId,jdbcType=BIGINT},
+			 </if>
+			 <if test="skuName != null">
+				sku_name = #{skuName,jdbcType=VARCHAR},
+			 </if>
+			 <if test="openId != null">
+				open_id = #{openId,jdbcType=CHAR},
+			 </if>
+			 <if test="commentor != null">
+				commentor = #{commentor,jdbcType=VARCHAR},
+			 </if>
+			 <if test="commentorImg != null">
+				commentor_img = #{commentorImg,jdbcType=VARCHAR},
+			 </if>
+			 <if test="commentContent != null">
+				comment_content = #{commentContent,jdbcType=VARCHAR},
+			 </if>
+			 <if test="score != null">
+				score = #{score,jdbcType=SMALLINT},
+			 </if>
+			 <if test="commentTime != null">
+				comment_time = #{commentTime,jdbcType=TIMESTAMP},
+			 </if>
+			 <if test="imgUri1 != null">
+				img_uri1 = #{imgUri1,jdbcType=VARCHAR},
+			 </if>
+			 <if test="imgUri2 != null">
+				img_uri2 = #{imgUri2,jdbcType=VARCHAR},
+			 </if>
+			 <if test="imgUri3 != null">
+				img_uri3 = #{imgUri3,jdbcType=VARCHAR},
+			 </if>
+			 <if test="replyer != null">
+				replyer = #{replyer,jdbcType=VARCHAR},
+			 </if>
+			 <if test="replyContent != null">
+				reply_content = #{replyContent,jdbcType=VARCHAR},
+			 </if>
+			 <if test="replyTime != null">
+				reply_time = #{replyTime,jdbcType=TIMESTAMP},
+			 </if>
+	</set>
+    where comment_id = #{commentId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from gs_comment where comment_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_comment <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_comment <include refid="select_query_sql"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			<if test="params.img != null">
+				and img_uri1 is not null
+			</if>
+			 <if test="params.commodityId != null">
+				and commodity_id = #{params.commodityId}
+			 </if>
+			 <if test="params.snapshootId != null">
+				and snapshoot_id = #{params.snapshootId}
+			 </if>
+			 <if test="params.skuName != null">
+				and sku_name = #{params.skuName}
+			 </if>
+			 <if test="params.openId != null">
+				and open_id = #{params.openId}
+			 </if>
+			 <if test="params.commentor != null">
+				and commentor = #{params.commentor}
+			 </if>
+			 <if test="params.commentorImg != null">
+				and commentor_img = #{params.commentorImg}
+			 </if>
+			 <if test="params.commentContent != null">
+				and comment_content = #{params.commentContent}
+			 </if>
+			 <if test="params.score != null">
+				and score = #{params.score}
+			 </if>
+			 <if test="params.commentTime != null">
+				and comment_time = #{params.commentTime}
+			 </if>
+			 <if test="params.imgUri1 != null">
+				and img_uri1 = #{params.imgUri1}
+			 </if>
+			 <if test="params.imgUri2 != null">
+				and img_uri2 = #{params.imgUri2}
+			 </if>
+			 <if test="params.imgUri3 != null">
+				and img_uri3 = #{params.imgUri3}
+			 </if>
+			 <if test="params.replyer != null">
+				and replyer = #{params.replyer}
+			 </if>
+			 <if test="params.replyContent != null">
+				and reply_content = #{params.replyContent}
+			 </if>
+			 <if test="params.replyTime != null">
+				and reply_time = #{params.replyTime}
+			 </if>
+	</where>
+  </sql>
+
+
+	<select id="queryComodityComments" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"/> from gs_comment <include refid="commentWhere"/>
+		order by comment_time desc
+		<if test="startIndex!=null"> limit #{startIndex},#{fetchSize}</if>
+	</select>
+
+	<sql id="commentWhere">
+		<where>
+			<if test="params.commodityId != null">
+				and commodity_id = #{params.commodityId}
+			</if>
+			<if test="params.img == 1">
+				and img_uri1 is not null
+			</if>
+		</where>
+	</sql>
+
+	<select id="queryScoreCommentNum" parameterType="long" resultType="int">
+		SELECT count(0) from gs_comment where snapshoot_id=#{value}
+	</select>
+
+	<select id="commentsCount" resultType="map" parameterType="long">
+		SELECT IF(ISNULL(img_uri1),0,1) img ,count(0) num from gs_comment WHERE commodity_id=#{value} GROUP BY IF(ISNULL(img_uri1),0,1)
+	</select>
+
+	<update id="updateCommentCount" parameterType="map">
+		UPDATE gs_commodity
+		<set>
+			<if test="score !=null">
+				comment_score = ifnull(comment_score,0) + #{score},
+			</if>
+			<if test="num !=null">
+				comment_total = ifnull(comment_total,0) + #{num},
+			</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+
+
+
+</mapper>

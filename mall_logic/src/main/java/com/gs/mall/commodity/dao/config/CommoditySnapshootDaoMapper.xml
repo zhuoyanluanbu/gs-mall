@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.commodity.dao.CommoditySnapshootDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.commodity.po.CommoditySnapshoot">
+			<id column="snapshoot_id" jdbcType="BIGINT" property="snapshootId" />
+			<result column="order_id" jdbcType="CHAR" property="orderId" />
+			<result column="commodity_id" jdbcType="BIGINT" property="commodityId" />
+			<result column="sku_id" jdbcType="VARCHAR" property="skuId" />
+			<result column="title" jdbcType="VARCHAR" property="title" />
+			<result column="attributes" jdbcType="VARCHAR" property="attributes" />
+			<result column="price" jdbcType="INTEGER" property="price" />
+			<result column="num" jdbcType="INTEGER" property="num" />
+			<result column="bar_code" jdbcType="VARCHAR" property="barCode" />
+			<result column="img_uri" jdbcType="VARCHAR" property="imgUri" />
+			<result column="status" jdbcType="SMALLINT" property="status" />
+			<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		snapshoot_id
+		,order_id
+		,commodity_id
+		,sku_id
+		,title
+		,attributes
+		,price
+		,num
+		,bar_code
+		,img_uri
+		,status
+		,create_time
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_commodity_snapshoot 
+    where snapshoot_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.commodity.po.CommoditySnapshoot" useGeneratedKeys="true" keyColumn="snapshoot_id" keyProperty="snapshootId">
+    insert into gs_commodity_snapshoot(
+				order_id
+				,commodity_id
+				,sku_id
+				,title
+				,attributes
+				,price
+				,num
+				,bar_code
+				,img_uri
+				,status
+				,create_time
+	)
+	values(
+			#{orderId,jdbcType=CHAR}
+			,#{commodityId,jdbcType=BIGINT}
+			,#{skuId,jdbcType=VARCHAR}
+			,#{title,jdbcType=VARCHAR}
+			,#{attributes,jdbcType=VARCHAR}
+			,#{price,jdbcType=INTEGER}
+			,#{num,jdbcType=INTEGER}
+			,#{barCode,jdbcType=VARCHAR}
+			,#{imgUri,jdbcType=VARCHAR}
+			,#{status,jdbcType=SMALLINT}
+			,#{createTime,jdbcType=TIMESTAMP}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.commodity.po.CommoditySnapshoot">
+    update gs_commodity_snapshoot 
+    <set>
+			 <if test="orderId != null">
+				order_id = #{orderId,jdbcType=CHAR},
+			 </if>
+			 <if test="commodityId != null">
+				commodity_id = #{commodityId,jdbcType=BIGINT},
+			 </if>
+			 <if test="skuId != null">
+				sku_id = #{skuId,jdbcType=VARCHAR},
+			 </if>
+			 <if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
+			 </if>
+			 <if test="attributes != null">
+				attributes = #{attributes,jdbcType=VARCHAR},
+			 </if>
+			 <if test="price != null">
+				price = #{price,jdbcType=INTEGER},
+			 </if>
+			 <if test="num != null">
+				num = #{num,jdbcType=INTEGER},
+			 </if>
+			 <if test="barCode != null">
+				bar_code = #{barCode,jdbcType=VARCHAR},
+			 </if>
+			 <if test="imgUri != null">
+				img_uri = #{imgUri,jdbcType=VARCHAR},
+			 </if>
+			 <if test="status != null">
+				status = #{status,jdbcType=SMALLINT},
+			 </if>
+			 <if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			 </if>
+	</set>
+    where snapshoot_id = #{snapshootId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from gs_commodity_snapshoot where snapshoot_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_commodity_snapshoot <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_commodity_snapshoot <include refid="select_query_sql"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.orderId != null">
+				and order_id = #{params.orderId}
+			 </if>
+			 <if test="params.commodityId != null">
+				and commodity_id = #{params.commodityId}
+			 </if>
+			 <if test="params.skuId != null">
+				and sku_id = #{params.skuId}
+			 </if>
+			 <if test="params.title != null">
+				and title = #{params.title}
+			 </if>
+			 <if test="params.attributes != null">
+				and attributes = #{params.attributes}
+			 </if>
+			 <if test="params.price != null">
+				and price = #{params.price}
+			 </if>
+			 <if test="params.num != null">
+				and num = #{params.num}
+			 </if>
+			 <if test="params.barCode != null">
+				and bar_code = #{params.barCode}
+			 </if>
+			 <if test="params.imgUri != null">
+				and img_uri = #{params.imgUri}
+			 </if>
+			 <if test="params.status != null">
+				and status = #{params.status}
+			 </if>
+			 <if test="params.createTime != null">
+				and create_time = #{params.createTime}
+			 </if>
+	</where>
+  </sql>
+
+
+	<select id="queryByOrderId" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from gs_commodity_snapshoot
+		where order_id = #{orderId,jdbcType=VARCHAR}
+	</select>
+
+	<insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="true" keyColumn="snapshoot_id">
+		insert into gs_commodity_snapshoot ( order_id, commodity_id,
+		sku_id, title, attributes,
+		price, num, img_uri,bar_code,
+		status, create_time)
+		values
+		<foreach collection="list" item="cs" open="" separator="," close="">
+			( #{cs.orderId,jdbcType=CHAR}, #{cs.commodityId,jdbcType=BIGINT},
+			#{cs.skuId,jdbcType=VARCHAR}, #{cs.title,jdbcType=VARCHAR}, #{cs.attributes,jdbcType=VARCHAR},
+			#{cs.price,jdbcType=INTEGER}, #{cs.num,jdbcType=INTEGER}, #{cs.imgUri,jdbcType=VARCHAR}, #{cs.barCode,jdbcType=VARCHAR},
+			#{cs.status,jdbcType=SMALLINT}, #{cs.createTime,jdbcType=TIMESTAMP})
+		</foreach>
+	</insert>
+</mapper>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.commodity.dao.CommodityAttributeRefDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.commodity.po.CommodityAttributeRef">
+			<id column="attr_ref_id" jdbcType="BIGINT" property="attrRefId" />
+			<result column="commodity_id" jdbcType="BIGINT" property="commodityId" />
+			<result column="attribute_id" jdbcType="BIGINT" property="attributeId" />
+			<result column="attribute_value" jdbcType="VARCHAR" property="attributeValue" />
+			<result column="sort_num" jdbcType="SMALLINT" property="sortNum" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		attr_ref_id
+		,commodity_id
+		,attribute_id
+		,attribute_value
+		,sort_num
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_commodity_attribute_ref 
+    where attr_ref_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.commodity.po.CommodityAttributeRef" useGeneratedKeys="true" keyColumn="attr_ref_id" keyProperty="attrRefId">
+    insert into gs_commodity_attribute_ref(
+				commodity_id
+				,attribute_id
+				,attribute_value
+				,sort_num
+	)
+	values(
+			#{commodityId,jdbcType=BIGINT}
+			,#{attributeId,jdbcType=BIGINT}
+			,#{attributeValue,jdbcType=VARCHAR}
+			,#{sortNum,jdbcType=SMALLINT}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.commodity.po.CommodityAttributeRef">
+    update gs_commodity_attribute_ref 
+    <set>
+			 <if test="commodityId != null">
+				commodity_id = #{commodityId,jdbcType=BIGINT},
+			 </if>
+			 <if test="attributeId != null">
+				attribute_id = #{attributeId,jdbcType=BIGINT},
+			 </if>
+			 <if test="attributeValue != null">
+				attribute_value = #{attributeValue,jdbcType=VARCHAR},
+			 </if>
+			 <if test="sortNum != null">
+				sort_num = #{sortNum,jdbcType=SMALLINT},
+			 </if>
+	</set>
+    where attr_ref_id = #{attrRefId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from gs_commodity_attribute_ref where attr_ref_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_commodity_attribute_ref <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_commodity_attribute_ref <include refid="select_query_sql"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.commodityId != null">
+				and commodity_id = #{params.commodityId}
+			 </if>
+			 <if test="params.attributeId != null">
+				and attribute_id = #{params.attributeId}
+			 </if>
+			 <if test="params.attributeValue != null">
+				and attribute_value = #{params.attributeValue}
+			 </if>
+			 <if test="params.sortNum != null">
+				and sort_num = #{params.sortNum}
+			 </if>
+	</where>
+  </sql>
+
+	<select id="getCommodityAttribute" parameterType="map" resultMap="BaseResultMap">
+		SELECT <include refid="Base_Column_List" /> from gs_commodity_attribute_ref
+		where commodity_id=#{commodityId}
+		and attribute_id=#{attributeId}
+		AND  attribute_value=#{attributeValue}
+	</select>
+
+
+
+
+</mapper>

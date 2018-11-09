@@ -1,0 +1,88 @@
+#server:
+#  port: 8063
+#  context-path: /mall-app
+#
+#mybatis:
+#  mapper-locations: classpath*:com/gs/mall/**/dao/config/*.xml
+#  executor-type: simple
+#
+#spring:
+#  datasource:
+#    url: jdbc:mysql://rm-bp1913lu47ti0gj4s.mysql.rds.aliyuncs.com:3306/gs_mall?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
+#    username: gs_mall
+#    password: Z&%u1cs7UiYy4yi1
+#    driver-class-name: com.mysql.jdbc.Driver
+#    type: com.alibaba.druid.pool.DruidDataSource
+#    maxActive: 20
+#    initialSize: 5
+#    maxWait: 60000
+#    minIdle: 3
+#  http:
+#    encoding:
+#      charset: UTF-8
+#  mvc:
+#    throw-exception-if-no-handler-found: true
+#  resources:
+#    add-mappings: false
+#  jackson:
+#    date-format: yyyy-MM-dd HH:mm:ss
+#    time-zone: GMT+8
+#
+#
+#jedis:
+#  address: 172.16.252.222
+#  port: 6379
+#  auth: d7f153db47f04b24
+#  maxTotal: 300
+#  maxIdle: 100
+#  minIdle: 40
+#  timeout: 5000
+#  testOnBorrow: true
+#
+##thread pool config
+#thread.pool:
+#  corePoolSize: 10
+#  maxPoolSize: 30
+#  keepAliveSeconds: 300
+#  #queueCapacity: 2147483647
+#
+##solr config
+#solr.url: http://172.16.252.219:8016/solr/
+#
+#
+#mall.pay.callback.url: http://testmalldev.goodsogood.com/app/order/callback/paymentCallback
+#mall.close.callback.url: http://testmalldev.goodsogood.com/app/order/callback/closeCallback
+## mall.refund.callback.url: http://malldev.goodsogood.com:8061/manage/workOrder/callback/refundCallback
+#
+#
+##mall freight limit
+#mall.freight.limit: 15
+#
+##app entrance uri
+#mall.app.entrance.uri: /app/banner/all
+#
+##time config
+#mall.pay.timeout.minute: 60
+#mall.deliver.timeout.day: 15
+#mall.inventory.retry.time: 10
+#
+##oss config
+#oss.test.env: 0
+#oss.gs.mall.key: export/mall
+#oss.test.file.path: /var/log/webapps/mall_oss
+#oss.file.path: /var/log/webapps/mall_oss/single_file
+#oss.access.id: DFTBZA4KpoWWGUdi
+#oss.access.key: 5uBQ6gYt6PEa3hqRdHnkMJLrhFFdIk
+##外网上传地址
+##oss.endpoint: http://oss-cn-shanghai.aliyuncs.com
+##内网上传地址
+#oss.endpoint: http://oss-cn-shanghai-internal.aliyuncs.com
+#oss.bucketname.temp: gsg-temp
+#oss.ossurl.temp: http://temp.goodsogood.com/
+#
+#gs.mq:
+#    providerSerAddrs: 172.16.30.31:4151,172.16.30.32:4151
+#    consumerSerAddrs: 172.16.30.33:4161,172.16.30.34:4161
+#    connectionType: lookup
+#    charset: UTF-8
+##   connectionType: direct

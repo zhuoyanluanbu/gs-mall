@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.partner.dao.SupplierRecommendDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.partner.po.SupplierRecommend">
+			<id column="pr_id" jdbcType="INTEGER" property="prId" />
+			<result column="supplier_id" jdbcType="CHAR" property="supplierId" />
+			<result column="merchant_name" jdbcType="VARCHAR" property="merchantName" />
+			<result column="img_url" jdbcType="VARCHAR" property="imgUrl" />
+			<result column="sort_num" jdbcType="SMALLINT" property="sortNum" />
+			<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+			<result column="operator" jdbcType="VARCHAR" property="operator" />
+			<result column="operator_id" jdbcType="CHAR" property="operatorId" />
+			<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		pr_id
+		,supplier_id
+		,merchant_name
+		,img_url
+		,sort_num
+		,create_time
+		,operator
+		,operator_id
+		,update_time
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_supplier_recommend 
+    where pr_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.partner.po.SupplierRecommend" useGeneratedKeys="true" keyColumn="pr_id" keyProperty="prId">
+    insert into gs_supplier_recommend(
+				supplier_id
+				,merchant_name
+				,img_url
+				,sort_num
+				,create_time
+				,operator
+				,operator_id
+				,update_time
+	)
+	values(
+			#{supplierId,jdbcType=CHAR}
+			,#{merchantName,jdbcType=VARCHAR}
+			,#{imgUrl,jdbcType=VARCHAR}
+			,#{sortNum,jdbcType=SMALLINT}
+			,#{createTime,jdbcType=TIMESTAMP}
+			,#{operator,jdbcType=VARCHAR}
+			,#{operatorId,jdbcType=CHAR}
+			,#{updateTime,jdbcType=TIMESTAMP}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.partner.po.SupplierRecommend">
+    update gs_supplier_recommend 
+    <set>
+			 <if test="supplierId != null">
+				supplier_id = #{supplierId,jdbcType=CHAR},
+			 </if>
+			 <if test="merchantName != null">
+				merchant_name = #{merchantName,jdbcType=VARCHAR},
+			 </if>
+			 <if test="imgUrl != null">
+				img_url = #{imgUrl,jdbcType=VARCHAR},
+			 </if>
+			 <if test="sortNum != null">
+				sort_num = #{sortNum,jdbcType=SMALLINT},
+			 </if>
+			 <if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			 </if>
+			 <if test="operator != null">
+				operator = #{operator,jdbcType=VARCHAR},
+			 </if>
+			 <if test="operatorId != null">
+				operator_id = #{operatorId,jdbcType=CHAR},
+			 </if>
+			 <if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			 </if>
+	</set>
+    where pr_id = #{prId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    delete from gs_supplier_recommend where pr_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_supplier_recommend <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_supplier_recommend <include refid="select_query_sql"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.supplierId != null">
+				and supplier_id = #{params.supplierId}
+			 </if>
+			 <if test="params.merchantName != null">
+				and merchant_name = #{params.merchantName}
+			 </if>
+			 <if test="params.imgUrl != null">
+				and img_url = #{params.imgUrl}
+			 </if>
+			 <if test="params.sortNum != null">
+				and sort_num = #{params.sortNum}
+			 </if>
+			 <if test="params.createTime != null">
+				and create_time = #{params.createTime}
+			 </if>
+			 <if test="params.operator != null">
+				and operator = #{params.operator}
+			 </if>
+			 <if test="params.operatorId != null">
+				and operator_id = #{params.operatorId}
+			 </if>
+			 <if test="params.updateTime != null">
+				and update_time = #{params.updateTime}
+			 </if>
+	</where>
+  </sql>
+
+	<select id="list" resultType="map">
+		SELECT t1.pr_id prId,t1.sort_num sortNum, t1.img_url imgUrl,s.supplier_id supplierId,s.`name`
+		from gs_supplier_recommend t1
+		LEFT JOIN  gs_supplier s on t1.supplier_id=s.supplier_id and s.status=1
+		ORDER  by sort_num asc;
+	</select>
+
+	<!--取消推荐-->
+	<update id="cancelRecommend" parameterType="com.gs.mall.partner.po.SupplierRecommend">
+		update gs_supplier_recommend set supplier_id=null,
+		merchant_name=null,
+		img_url=null,
+		operator=#{operator},
+		operator_id=#{operatorId},
+		update_time=now()
+		where  supplier_id=#{supplierId}
+	</update>
+
+	<select id="isRecommended" parameterType="string" resultType="int">
+		select count(0) from gs_supplier_recommend where supplier_id=#{value}
+	</select>
+
+	<select id="queryBySupplierId" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"/> from gs_supplier_recommend where supplier_id =#{supplierId}
+	</select>
+
+</mapper>

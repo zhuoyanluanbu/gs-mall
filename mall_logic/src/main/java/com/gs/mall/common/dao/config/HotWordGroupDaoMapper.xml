@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.common.dao.HotWordGroupDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.common.po.HotWordGroup">
+			<id column="group_id" jdbcType="INTEGER" property="groupId" />
+			<result column="group_name" jdbcType="VARCHAR" property="groupName" />
+			<result column="hot_word" jdbcType="VARCHAR" property="hotWord" />
+			<result column="status" jdbcType="INTEGER" property="status" />
+			<result column="sort_num" jdbcType="SMALLINT" property="sortNum" />
+			<result column="operator" jdbcType="VARCHAR" property="operator" />
+			<result column="operator_id" jdbcType="CHAR" property="operatorId" />
+			<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		group_id
+		,group_name
+		,hot_word
+		,status
+		,sort_num
+		,operator
+		,operator_id
+		,update_time
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_hot_word_group 
+    where group_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.common.po.HotWordGroup" useGeneratedKeys="true" keyColumn="group_id" keyProperty="groupId">
+    insert into gs_hot_word_group(
+				group_name
+				,hot_word
+				,status
+				,sort_num
+				,operator
+				,operator_id
+				,update_time
+	)
+	values(
+			#{groupName,jdbcType=VARCHAR}
+			,#{hotWord,jdbcType=VARCHAR}
+			,#{status,jdbcType=INTEGER}
+			,#{sortNum,jdbcType=SMALLINT}
+			,#{operator,jdbcType=VARCHAR}
+			,#{operatorId,jdbcType=CHAR}
+			,#{updateTime,jdbcType=TIMESTAMP}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.common.po.HotWordGroup">
+    update gs_hot_word_group 
+    <set>
+			 <if test="groupName != null">
+				group_name = #{groupName,jdbcType=VARCHAR},
+			 </if>
+			 <if test="hotWord != null">
+				hot_word = #{hotWord,jdbcType=VARCHAR},
+			 </if>
+			 <if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			 </if>
+			 <if test="sortNum != null">
+				sort_num = #{sortNum,jdbcType=SMALLINT},
+			 </if>
+			 <if test="operator != null">
+				operator = #{operator,jdbcType=VARCHAR},
+			 </if>
+			 <if test="operatorId != null">
+				operator_id = #{operatorId,jdbcType=CHAR},
+			 </if>
+			 <if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			 </if>
+	</set>
+    where group_id = #{groupId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    delete from gs_hot_word_group where group_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_hot_word_group <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_hot_word_group <include refid="select_query_sql"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.groupName != null">
+				and group_name = #{params.groupName}
+			 </if>
+			 <if test="params.hotWord != null">
+				and hot_word = #{params.hotWord}
+			 </if>
+			 <if test="params.status != null">
+				and status = #{params.status}
+			 </if>
+			 <if test="params.sortNum != null">
+				and sort_num = #{params.sortNum}
+			 </if>
+			 <if test="params.operator != null">
+				and operator = #{params.operator}
+			 </if>
+			 <if test="params.operatorId != null">
+				and operator_id = #{params.operatorId}
+			 </if>
+			 <if test="params.updateTime != null">
+				and update_time = #{params.updateTime}
+			 </if>
+	</where>
+  </sql>
+
+	<select id="all" parameterType="int" resultMap="BaseResultMap">
+		SELECT  <include refid="Base_Column_List"/> from gs_hot_word_group
+		<where>
+			<if test="value!=null"> status = #{value}</if>
+		</where>
+	</select>
+
+	<select id="maxSortNum" resultType="int">
+		SELECT IFNULL(max(sort_num),0) from gs_hot_word_group
+	</select>
+
+</mapper>

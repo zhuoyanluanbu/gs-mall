@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.common.dao.CategoryDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.common.po.Category">
+			<id column="category_id" jdbcType="BIGINT" property="categoryId" />
+			<result column="parent_id" jdbcType="BIGINT" property="parentId" />
+			<result column="name" jdbcType="VARCHAR" property="name" />
+			<result column="status" jdbcType="SMALLINT" property="status" />
+			<result column="is_allow_del" jdbcType="SMALLINT" property="isAllowDel" />
+			<result column="sort_num" jdbcType="SMALLINT" property="sortNum" />
+			<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+			<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+			<result column="operator" jdbcType="VARCHAR" property="operator" />
+			<result column="operator_id" jdbcType="CHAR" property="operatorId" />
+  </resultMap>
+
+	<resultMap id="CategoryTree" type="com.gs.mall.common.po.Category" extends="BaseResultMap">
+		<result column="count" property="count" jdbcType="INTEGER"/>
+		<collection property="child"  ofType="com.gs.mall.common.po.Category">
+			<id column="c_category_id" jdbcType="BIGINT" property="categoryId" />
+			<result column="c_parent_id" jdbcType="BIGINT" property="parentId" />
+			<result column="c_name" jdbcType="VARCHAR" property="name" />
+			<result column="c_status" jdbcType="SMALLINT" property="status" />
+			<result column="c_is_allow_del" jdbcType="SMALLINT" property="isAllowDel" />
+			<result column="c_sort_num" jdbcType="SMALLINT" property="sortNum" />
+			<result column="c_create_time" jdbcType="TIMESTAMP" property="createTime" />
+			<result column="c_update_time" jdbcType="TIMESTAMP" property="updateTime" />
+			<result column="c_count" property="count" jdbcType="INTEGER"/>
+		</collection>
+	</resultMap>
+  
+
+  <sql id="Base_Column_List">
+		category_id
+		,parent_id
+		,name
+		,status
+		,is_allow_del
+		,sort_num
+		,create_time
+		,update_time
+		,operator
+		,operator_id
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_category 
+    where category_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.common.po.Category" useGeneratedKeys="true" keyColumn="category_id" keyProperty="categoryId">
+    insert into gs_category(
+				parent_id
+				,name
+				,status
+				,is_allow_del
+				,sort_num
+				,create_time
+				,update_time
+				,operator
+				,operator_id
+	)
+	values(
+			#{parentId,jdbcType=BIGINT}
+			,#{name,jdbcType=VARCHAR}
+			,#{status,jdbcType=SMALLINT}
+			,#{isAllowDel,jdbcType=SMALLINT}
+			,#{sortNum,jdbcType=SMALLINT}
+			,#{createTime,jdbcType=TIMESTAMP}
+			,#{updateTime,jdbcType=TIMESTAMP}
+			,#{operator,jdbcType=VARCHAR}
+			,#{operatorId,jdbcType=CHAR}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.common.po.Category">
+    update gs_category 
+    <set>
+			 <if test="parentId != null">
+				parent_id = #{parentId,jdbcType=BIGINT},
+			 </if>
+			 <if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			 </if>
+			 <if test="status != null">
+				status = #{status,jdbcType=SMALLINT},
+			 </if>
+			 <if test="isAllowDel != null">
+				is_allow_del = #{isAllowDel,jdbcType=SMALLINT},
+			 </if>
+			 <if test="sortNum != null">
+				sort_num = #{sortNum,jdbcType=SMALLINT},
+			 </if>
+			 <if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			 </if>
+			 <if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			 </if>
+			 <if test="operator != null">
+				operator = #{operator,jdbcType=VARCHAR},
+			 </if>
+			 <if test="operatorId != null">
+				operator_id = #{operatorId,jdbcType=CHAR},
+			 </if>
+	</set>
+    where category_id = #{categoryId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from gs_category where category_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_category <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_category <include refid="select_query_sql"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.parentId != null">
+				and parent_id = #{params.parentId}
+			 </if>
+			 <if test="params.name != null">
+				and name = #{params.name}
+			 </if>
+			 <if test="params.status != null">
+				and status = #{params.status}
+			 </if>
+			 <if test="params.isAllowDel != null">
+				and is_allow_del = #{params.isAllowDel}
+			 </if>
+			 <if test="params.sortNum != null">
+				and sort_num = #{params.sortNum}
+			 </if>
+			 <if test="params.createTime != null">
+				and create_time = #{params.createTime}
+			 </if>
+			 <if test="params.updateTime != null">
+				and update_time = #{params.updateTime}
+			 </if>
+			 <if test="params.operator != null">
+				and operator = #{params.operator}
+			 </if>
+			 <if test="params.operatorId != null">
+				and operator_id = #{params.operatorId}
+			 </if>
+	</where>
+  </sql>
+
+
+	<update id="delCategory" parameterType="long">
+		update gs_category set status=-1,sort_num=null where category_id=#{value}
+		OR category_id in(SELECT  category_id from ( SELECT category_id from gs_category where parent_id=#{value}) a)
+	</update>
+	<select id="maxSortNum" resultType="int">
+		SELECT IFNULL(max(sort_num),0) from gs_category
+	</select>
+	<select id="getCategoryName" parameterType="long" resultType="string">
+		SELECT name from gs_category where category_id=#{value}
+	</select>
+	<select id="queryByParentId" parameterType="long" resultMap="BaseResultMap">
+		SELECT * from gs_category where parent_id =#{parentId}
+	</select>
+	<select id="findIdsByParentId" parameterType="long" resultType="long">
+		SELECT category_id from gs_category where parent_id =#{parentId}
+	</select>
+
+	<select id="getBeforeCategory" parameterType="com.gs.mall.common.po.Category" resultMap="BaseResultMap">
+		SELECT * from gs_category where
+		parent_id=(SELECT parent_id from gs_category where category_id=#{categoryId}) and sort_num &lt; (SELECT sort_num from gs_category where category_id=#{categoryId})
+		order by sort_num desc limit 1
+	</select>
+
+	<select id="allCategory" parameterType="int" resultMap="CategoryTree">
+
+		SELECT c1.*,
+		c2.category_id c_category_id, c2.parent_id c_parent_id, c2.name c_name, c2.status c_status, c2.is_allow_del c_is_allow_del, c2.sort_num c_sort_num, c2.create_time c_create_time, c2.update_time c_update_time,
+		c2.count c_count
+		FROM  (SELECT t1.*,count(t2.id) count from gs_category t1
+		LEFT JOIN gs_commodity t2 on t1.category_id=t2.category_id
+		GROUP BY t1.category_id) c1
+		LEFT JOIN  (SELECT t1.*,count(t2.id) count from gs_category t1
+		LEFT JOIN gs_commodity t2 on t1.category_id=t2.category_id AND t2.`status`!=-1
+		GROUP BY t1.category_id) c2 ON c1.category_id=c2.parent_id
+		<if test="value !=null">
+			AND  c2.status=#{value}
+		</if>
+		<where>
+			c1.parent_id=0
+			<if test="value !=null">
+				AND  c1.status=#{value}
+			</if>
+		</where>
+		ORDER  by c1.sort_num asc,c2.sort_num asc
+	</select>
+	
+	<select id="countCNum" resultType="int" >
+		SELECT
+			count(id) items
+		FROM
+			gs_commodity
+		WHERE
+			(category_id IN (
+				SELECT
+					category_id
+				FROM
+					gs_category
+				WHERE
+					parent_id = #{parentId}
+			)
+		OR category_id = #{parentId})
+		AND `status` != -1
+	</select>
+</mapper>

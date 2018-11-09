@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.finance.dao.TradeDetailDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.finance.po.TradeDetail">
+			<id column="td_id" jdbcType="CHAR" property="tdId" />
+			<result column="form_id" jdbcType="CHAR" property="formId" />
+			<result column="merchant_id" jdbcType="BIGINT" property="merchantId" />
+			<result column="trade_no" jdbcType="CHAR" property="tradeNo" />
+			<result column="name" jdbcType="VARCHAR" property="name" />
+			<result column="payer_id" jdbcType="CHAR" property="payerId" />
+			<result column="payer" jdbcType="VARCHAR" property="payer" />
+			<result column="type" jdbcType="SMALLINT" property="type" />
+			<result column="amount" jdbcType="INTEGER" property="amount" />
+			<result column="payee_id" jdbcType="CHAR" property="payeeId" />
+			<result column="payee" jdbcType="VARCHAR" property="payee" />
+			<result column="status" jdbcType="SMALLINT" property="status" />
+			<result column="trade_status" jdbcType="VARCHAR" property="tradeStatus" />
+			<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		td_id
+		,form_id
+		,merchant_id
+		,trade_no
+		,name
+		,payer_id
+		,payer
+		,type
+		,amount
+		,payee_id
+		,payee
+		,status
+		,trade_status
+		,create_time
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_trade_detail 
+    where td_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.finance.po.TradeDetail">
+    insert into gs_trade_detail( <include refid="Base_Column_List"/> )
+    values(
+			#{tdId,jdbcType=CHAR}
+			,#{formId,jdbcType=CHAR}
+			,#{merchantId,jdbcType=BIGINT}
+			,#{tradeNo,jdbcType=CHAR}
+			,#{name,jdbcType=VARCHAR}
+			,#{payerId,jdbcType=CHAR}
+			,#{payer,jdbcType=VARCHAR}
+			,#{type,jdbcType=SMALLINT}
+			,#{amount,jdbcType=INTEGER}
+			,#{payeeId,jdbcType=CHAR}
+			,#{payee,jdbcType=VARCHAR}
+			,#{status,jdbcType=SMALLINT}
+			,#{tradeStatus,jdbcType=VARCHAR}
+			,#{createTime,jdbcType=TIMESTAMP}
+	)
+  </insert>	
+
+  <update id="update" parameterType="com.gs.mall.finance.po.TradeDetail">
+    update gs_trade_detail 
+    <set>
+			 <if test="formId != null">
+				form_id = #{formId,jdbcType=CHAR},
+			 </if>
+			 <if test="merchantId != null">
+				merchant_id = #{merchantId,jdbcType=BIGINT},
+			 </if>
+			 <if test="tradeNo != null">
+				trade_no = #{tradeNo,jdbcType=CHAR},
+			 </if>
+			 <if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			 </if>
+			 <if test="payerId != null">
+				payer_id = #{payerId,jdbcType=CHAR},
+			 </if>
+			 <if test="payer != null">
+				payer = #{payer,jdbcType=VARCHAR},
+			 </if>
+			 <if test="type != null">
+				type = #{type,jdbcType=SMALLINT},
+			 </if>
+			 <if test="amount != null">
+				amount = #{amount,jdbcType=INTEGER},
+			 </if>
+			 <if test="payeeId != null">
+				payee_id = #{payeeId,jdbcType=CHAR},
+			 </if>
+			 <if test="payee != null">
+				payee = #{payee,jdbcType=VARCHAR},
+			 </if>
+			 <if test="status != null">
+				status = #{status,jdbcType=SMALLINT},
+			 </if>
+			 <if test="tradeStatus != null">
+				trade_status = #{tradeStatus,jdbcType=VARCHAR},
+			 </if>
+			 <if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			 </if>
+	</set>
+    where td_id = #{tdId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.String">
+    delete from gs_trade_detail where td_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_trade_detail <include refid="select_query_sql"/> 
+	  order by create_time desc	limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_trade_detail <include refid="select_query_sql"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	  <where>
+		  <if test="params.formId != null and params.formId != ''">
+			  form_id = #{params.formId}
+		  </if>
+		  <if test="params.merchantId != null and params.merchantId  != ''">
+			  and merchant_id = #{params.merchantId}
+		  </if>
+		  <if test="params.status != null and params.merchantId != ''">
+			  and `status` = #{params.status}
+		  </if>
+		  <if test="params.startCreateTime != null">
+			  and create_time &gt;= #{params.startCreateTime}
+		  </if>
+		  <if test="params.endCreateTime != null">
+			  and create_time &lt;= #{params.endCreateTime}
+		  </if>
+		  <if test="params.type != null and params.type != ''">
+			  and `type` = #{params.type}
+		  </if>
+		  <if test="params.tradeStatus != null and params.tradeStatus != ''">
+			  and trade_status = #{params.tradeStatus}
+		  </if>
+	  </where>
+  </sql>
+
+
+	<insert id="insertOrUpdate" parameterType="com.gs.mall.finance.po.TradeDetail">
+		insert into gs_trade_detail (td_id, form_id,merchant_id, trade_no,
+		name, payer_id, payer,
+		type, amount, payee_id,
+		payee, status, trade_status, create_time)
+		values (#{tdId,jdbcType=CHAR}, #{formId,jdbcType=CHAR},#{merchantId,jdbcType=BIGINT}, #{tradeNo,jdbcType=CHAR},
+		#{name,jdbcType=VARCHAR}, #{payerId,jdbcType=CHAR}, #{payer,jdbcType=VARCHAR},
+		#{type,jdbcType=SMALLINT}, #{amount,jdbcType=INTEGER}, #{payeeId,jdbcType=CHAR},
+		#{payee,jdbcType=VARCHAR},#{status,jdbcType=SMALLINT},#{tradeStatus,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP})
+		ON DUPLICATE KEY UPDATE `status` = VALUES(`status`),trade_status = VALUES(trade_status),`payer` = VALUES(`payer`),amount = VALUES(amount)
+	</insert>
+
+	<select id="queryByIdNo" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"/> from gs_trade_detail where form_id = #{formId} and trade_no = #{tradeNo}
+	</select>
+
+</mapper>

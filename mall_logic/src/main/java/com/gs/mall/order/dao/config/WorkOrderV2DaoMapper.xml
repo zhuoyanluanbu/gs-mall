@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.order.dao.WorkOrderV2Dao">
+    <resultMap id="WorkOrderV2" type="com.gs.mall.order.po.WorkOrderV2">
+        <id column="id" property="id" />
+        <result column="order_id" property="order_id" />
+        <result column="wo_id" property="wo_id" />
+        <result column="wo_reason" property="wo_reason" />
+        <result column="fromid" property="fromid" />
+        <result column="fromname" property="fromname" />
+        <result column="fromphone" property="fromphone" />
+        <result column="fromwhere" property="fromwhere" />
+        <result column="createtime" property="createtime" />
+        <result column="isrefund" property="isrefund" />
+        <result column="imgurl0" property="imgurl0" />
+        <result column="imgurl1" property="imgurl1" />
+        <result column="imgurl2" property="imgurl2" />
+        <result column="state" property="state" />
+        <result column="remark" property="remark" />
+        <result column="isDel" property="isDel" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id,order_id,wo_id,wo_reason,fromid,fromname,fromphone,fromwhere,createtime,isrefund,
+         imgurl0,imgurl1,imgurl2,state,remark,isDel
+    </sql>
+    <sql id="table_name">gs_work_order_new</sql>
+    <sql id="select_query_sql">
+        <where>
+            <if test="params.order_id != null">
+                and order_id = #{params.order_id}
+            </if>
+            <if test="params.wo_id != null">
+                and wo_id = #{params.wo_id}
+            </if>
+            <if test="params.wo_reason != null">
+                and wo_reason = #{params.wo_reason}
+            </if>
+            <if test="params.fromid != null">
+                and fromid = #{params.fromid}
+            </if>
+            <if test="params.fromname != null">
+                and fromname = #{params.fromname}
+            </if>
+            <if test="params.fromphone != null">
+                and fromphone = #{params.fromphone}
+            </if>
+            <if test="params.isrefund != null">
+                and isrefund = #{params.isrefund}
+            </if>
+            <if test="params.state != null">
+                and state = #{params.state}
+            </if>
+            <if test="params.remark != null">
+                and remark = #{params.remark}
+            </if>
+            <if test="params.beginDate != null">
+                and createtime &gt;= #{params.beginDate}
+            </if>
+            <if test="params.endDate != null">
+                and createtime &lt;= #{params.endDate}
+            </if>
+        </where>
+    </sql>
+
+    <insert id="insert" parameterType="com.gs.mall.order.po.WorkOrderV2" useGeneratedKeys="true"
+            keyColumn="id"
+            keyProperty="id">
+        INSERT INTO <include refid="table_name" />(<include refid="Base_Column_List"/>)
+        VALUES(0,#{order_id},#{wo_id},#{wo_reason},#{fromid},#{fromname},#{fromphone},#{fromwhere},
+        #{createtime}, #{isrefund}, #{imgurl0},#{imgurl1},#{imgurl2},0,#{remark},0)
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <update id="update" parameterType="com.gs.mall.order.po.WorkOrderV2">
+      UPDATE <include refid="table_name" />
+        <set>
+            <if test="params.order_id != null">
+                order_id = #{order_id},
+            </if>
+            <if test="params.wo_id != null">
+               wo_id = #{wo_id},
+            </if>
+            <if test="params.wo_reason != null">
+               wo_reason = #{wo_reason},
+            </if>
+            <if test="params.fromid != null">
+               fromid = #{fromid},
+            </if>
+            <if test="params.fromname != null">
+                fromname = #{fromname},
+            </if>
+            <if test="params.fromphone != null">
+                fromphone = #{fromphone},
+            </if>
+            <if test="params.isrefund != null">
+                isrefund = #{isrefund},
+            </if>
+            <if test="params.state != null">
+                state = #{state},
+            </if>
+            <if test="params.remark != null">
+                remark = #{remark}
+            </if>
+        </set>
+        WHERE wo_id=#{wo_id}
+    </update>
+
+    <select id="selectById" parameterType="int" resultMap="WorkOrderV2">
+        SELECT * from <include refid="table_name" /> WHERE id=#{id}
+    </select>
+
+    <select id="selectByParam" resultMap="WorkOrderV2">
+        SELECT * FROM <include refid="table_name" /> <include refid="select_query_sql" /> limit #{startIndex}, #{fetchSize}
+    </select>
+
+    <update id="deleteById" parameterType="int">
+        UPDATE <include refid="table_name" /> SET isDel=1 WHERE id=#{id}
+    </update>
+</mapper>

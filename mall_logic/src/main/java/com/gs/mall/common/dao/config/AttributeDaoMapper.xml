@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.common.dao.AttributeDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.common.po.Attribute">
+			<id column="attribute_id" jdbcType="BIGINT" property="attributeId" />
+			<result column="name" jdbcType="VARCHAR" property="name" />
+			<result column="status" jdbcType="SMALLINT" property="status" />
+			<result column="sort_num" jdbcType="SMALLINT" property="sortNum" />
+			<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+			<result column="operator" jdbcType="VARCHAR" property="operator" />
+			<result column="operator_id" jdbcType="CHAR" property="operatorId" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		attribute_id
+		,name
+		,status
+		,sort_num
+		,create_time
+		,operator
+		,operator_id
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_attribute 
+    where attribute_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.common.po.Attribute" useGeneratedKeys="true" keyColumn="attribute_id" keyProperty="attributeId">
+    insert into gs_attribute(
+				name
+				,status
+				,sort_num
+				,create_time
+				,operator
+				,operator_id
+	)
+	values(
+			#{name,jdbcType=VARCHAR}
+			,#{status,jdbcType=SMALLINT}
+			,#{sortNum,jdbcType=SMALLINT}
+			,#{createTime,jdbcType=TIMESTAMP}
+			,#{operator,jdbcType=VARCHAR}
+			,#{operatorId,jdbcType=CHAR}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.common.po.Attribute">
+    update gs_attribute 
+    <set>
+			 <if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			 </if>
+			 <if test="status != null">
+				status = #{status,jdbcType=SMALLINT},
+			 </if>
+			 <if test="sortNum != null">
+				sort_num = #{sortNum,jdbcType=SMALLINT},
+			 </if>
+			 <if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			 </if>
+			 <if test="operator != null">
+				operator = #{operator,jdbcType=VARCHAR},
+			 </if>
+			 <if test="operatorId != null">
+				operator_id = #{operatorId,jdbcType=CHAR},
+			 </if>
+	</set>
+    where attribute_id = #{attributeId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from gs_attribute where attribute_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_attribute <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_attribute <include refid="select_query_sql"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.name != null">
+				and name = #{params.name}
+			 </if>
+			 <if test="params.status != null">
+				and status = #{params.status}
+			 </if>
+			 <if test="params.sortNum != null">
+				and sort_num = #{params.sortNum}
+			 </if>
+			 <if test="params.createTime != null">
+				and create_time = #{params.createTime}
+			 </if>
+			 <if test="params.operator != null">
+				and operator = #{params.operator}
+			 </if>
+			 <if test="params.operatorId != null">
+				and operator_id = #{params.operatorId}
+			 </if>
+	</where>
+  </sql>
+
+	<select id="selectAll" parameterType="int" resultMap="BaseResultMap">
+		SELECT <include refid="Base_Column_List"/> from gs_attribute WHERE  status=#{value}
+	</select>
+	
+	<select id="selectIsRef" parameterType="java.lang.Long" resultType="int">
+		SELECT COUNT(1) FROM gs_commodity_attribute_ref WHERE attribute_id=#{attributeId}
+	</select>
+	
+	<select id="vadateName" parameterType="java.lang.String" resultType="int">
+		SELECT name FROM gs_attribute WHERE name IN 
+			(<foreach collection="list" item="item" separator=",">
+				#{item}
+    		</foreach>
+    		)
+	</select>
+	
+	<insert id="insertBatch" parameterType="java.util.List" useGeneratedKeys="true" keyColumn="attribute_id" keyProperty="attributeId">
+	    insert into gs_attribute(
+					name
+					,status
+					,sort_num
+					,create_time
+					,operator
+					,operator_id
+		)
+		values
+		<foreach collection="list" item="item" separator=",">
+    		(
+			#{item.name}
+			,#{item.status}
+			,#{item.sortNum}
+			,#{item.createTime}
+			,#{item.operator}
+			,#{item.operatorId}
+			)	
+    	</foreach>
+  </insert>
+  
+  <select id="maxSort" resultType="int">
+  	select sort_num from gs_attribute order by sort_num DESC limit 0,1
+  </select>
+</mapper>

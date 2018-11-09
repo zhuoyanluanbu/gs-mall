@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.finance.dao.NetflowRecordDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.finance.po.NetflowRecord">
+			<id column="nr_id" jdbcType="BIGINT" property="nrId" />
+			<result column="open_id" jdbcType="CHAR" property="openId" />
+			<result column="user_name" jdbcType="VARCHAR" property="userName" />
+			<result column="ip" jdbcType="VARCHAR" property="ip" />
+			<result column="device_info" jdbcType="VARCHAR" property="deviceInfo" />
+			<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		nr_id
+		,open_id
+		,user_name
+		,ip
+		,device_info
+		,create_time
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_netflow_record 
+    where nr_id = #{id}
+  </select>
+  
+  <select id="queryByPage" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from gs_netflow_record <include refid="select_query_sql"/>
+    order by create_time desc
+    <if test="fetchSize > 0">
+      limit #{startIndex},#{fetchSize}
+    </if>
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.finance.po.NetflowRecord" useGeneratedKeys="true" keyColumn="nr_id" keyProperty="nrId">
+    insert into gs_netflow_record(
+				open_id
+				,user_name
+				,ip
+				,device_info
+				,create_time
+	)
+	values(
+			#{openId,jdbcType=CHAR}
+			,#{userName,jdbcType=VARCHAR}
+			,#{ip,jdbcType=VARCHAR}
+			,#{deviceInfo,jdbcType=VARCHAR}
+			,#{createTime,jdbcType=TIMESTAMP}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.finance.po.NetflowRecord">
+    update gs_netflow_record 
+    <set>
+			 <if test="openId != null">
+				open_id = #{openId,jdbcType=CHAR},
+			 </if>
+			 <if test="userName != null">
+				user_name = #{userName,jdbcType=VARCHAR},
+			 </if>
+			 <if test="ip != null">
+				ip = #{ip,jdbcType=VARCHAR},
+			 </if>
+			 <if test="deviceInfo != null">
+				device_info = #{deviceInfo,jdbcType=VARCHAR},
+			 </if>
+			 <if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			 </if>
+	</set>
+    where nr_id = #{nrId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from gs_netflow_record where nr_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_netflow_record <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_netflow_record <include refid="select_query_sql"/> 
+  </select>
+  
+  <select id="queryCountByPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+    select count(*) items from gs_netflow_record <include refid="select_query_sql"/>
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.openId != null">
+				and open_id = #{params.openId}
+			 </if>
+			 <if test="params.userName != null">
+				and user_name = #{params.userName}
+			 </if>
+			 <if test="params.ip != null">
+				and ip = #{params.ip}
+			 </if>
+			 <if test="params.deviceInfo != null">
+				and device_info = #{params.deviceInfo}
+			 </if>
+			 <if test="params.createTime != null">
+				and create_time = #{params.createTime}
+			 </if>
+	</where>
+  </sql>
+
+</mapper>

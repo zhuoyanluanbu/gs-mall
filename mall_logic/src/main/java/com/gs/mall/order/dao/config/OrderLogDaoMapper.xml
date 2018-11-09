@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.order.dao.OrderLogDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.order.po.OrderLog">
+			<id column="log_id" jdbcType="BIGINT" property="logId" />
+			<result column="order_id" jdbcType="CHAR" property="orderId" />
+			<result column="order_status" jdbcType="INTEGER" property="orderStatus" />
+			<result column="content" jdbcType="VARCHAR" property="content" />
+			<result column="operator_id" jdbcType="CHAR" property="operatorId" />
+			<result column="operator" jdbcType="VARCHAR" property="operator" />
+			<result column="operator_type" jdbcType="SMALLINT" property="operatorType" />
+			<result column="operate_time" jdbcType="TIMESTAMP" property="operateTime" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		log_id
+		,order_id
+		,order_status
+		,content
+		,operator_id
+		,operator
+		,operator_type
+		,operate_time
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_order_log 
+    where log_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.order.po.OrderLog" useGeneratedKeys="true" keyColumn="log_id" keyProperty="logId">
+    insert into gs_order_log(
+				order_id
+				,order_status
+				,content
+				,operator_id
+				,operator
+				,operator_type
+				,operate_time
+	)
+	values(
+			#{orderId,jdbcType=CHAR}
+			,#{orderStatus,jdbcType=INTEGER}
+			,#{content,jdbcType=VARCHAR}
+			,#{operatorId,jdbcType=CHAR}
+			,#{operator,jdbcType=VARCHAR}
+			,#{operatorType,jdbcType=SMALLINT}
+			,#{operateTime,jdbcType=TIMESTAMP}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.order.po.OrderLog">
+    update gs_order_log 
+    <set>
+			 <if test="orderId != null">
+				order_id = #{orderId,jdbcType=CHAR},
+			 </if>
+			 <if test="orderStatus != null">
+				order_status = #{orderStatus,jdbcType=INTEGER},
+			 </if>
+			 <if test="content != null">
+				content = #{content,jdbcType=VARCHAR},
+			 </if>
+			 <if test="operatorId != null">
+				operator_id = #{operatorId,jdbcType=CHAR},
+			 </if>
+			 <if test="operator != null">
+				operator = #{operator,jdbcType=VARCHAR},
+			 </if>
+			 <if test="operatorType != null">
+				operator_type = #{operatorType,jdbcType=SMALLINT},
+			 </if>
+			 <if test="operateTime != null">
+				operate_time = #{operateTime,jdbcType=TIMESTAMP},
+			 </if>
+	</set>
+    where log_id = #{logId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from gs_order_log where log_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_order_log <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_order_log <include refid="select_query_sql"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.orderId != null">
+				and order_id = #{params.orderId}
+			 </if>
+			 <if test="params.orderStatus != null">
+				and order_status = #{params.orderStatus}
+			 </if>
+			 <if test="params.content != null">
+				and content = #{params.content}
+			 </if>
+			 <if test="params.operatorId != null">
+				and operator_id = #{params.operatorId}
+			 </if>
+			 <if test="params.operator != null">
+				and operator = #{params.operator}
+			 </if>
+			 <if test="params.operatorType != null">
+				and operator_type = #{params.operatorType}
+			 </if>
+			 <if test="params.operateTime != null">
+				and operate_time = #{params.operateTime}
+			 </if>
+	</where>
+  </sql>
+
+
+	<select id="queryByOrderId" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from gs_order_log
+		where order_id = #{orderId}
+	</select>
+</mapper>

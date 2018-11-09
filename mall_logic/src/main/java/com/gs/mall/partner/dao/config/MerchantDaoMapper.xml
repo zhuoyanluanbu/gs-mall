@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.partner.dao.MerchantDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.partner.po.Merchant">
+			<id column="merchant_id" jdbcType="BIGINT" property="merchantId" />
+			<result column="open_id" jdbcType="CHAR" property="openId" />
+			<result column="name" jdbcType="VARCHAR" property="name" />
+			<result column="is_self_manage" jdbcType="SMALLINT" property="isSelfManage" />
+			<result column="introduction" jdbcType="VARCHAR" property="introduction" />
+			<result column="contact" jdbcType="VARCHAR" property="contact" />
+			<result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+			<result column="address" jdbcType="VARCHAR" property="address" />
+			<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		merchant_id
+		,open_id
+		,name
+		,is_self_manage
+		,introduction
+		,contact
+		,contact_phone
+		,address
+		,create_time
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_merchant 
+    where merchant_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.partner.po.Merchant" useGeneratedKeys="true" keyColumn="merchant_id" keyProperty="merchantId">
+    insert into gs_merchant(
+				open_id
+				,name
+				,is_self_manage
+				,introduction
+				,contact
+				,contact_phone
+				,address
+				,create_time
+	)
+	values(
+			#{openId,jdbcType=CHAR}
+			,#{name,jdbcType=VARCHAR}
+			,#{isSelfManage,jdbcType=SMALLINT}
+			,#{introduction,jdbcType=VARCHAR}
+			,#{contact,jdbcType=VARCHAR}
+			,#{contactPhone,jdbcType=VARCHAR}
+			,#{address,jdbcType=VARCHAR}
+			,#{createTime,jdbcType=TIMESTAMP}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.partner.po.Merchant">
+    update gs_merchant 
+    <set>
+			 <if test="openId != null">
+				open_id = #{openId,jdbcType=CHAR},
+			 </if>
+			 <if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			 </if>
+			 <if test="isSelfManage != null">
+				is_self_manage = #{isSelfManage,jdbcType=SMALLINT},
+			 </if>
+			 <if test="introduction != null">
+				introduction = #{introduction,jdbcType=VARCHAR},
+			 </if>
+			 <if test="contact != null">
+				contact = #{contact,jdbcType=VARCHAR},
+			 </if>
+			 <if test="contactPhone != null">
+				contact_phone = #{contactPhone,jdbcType=VARCHAR},
+			 </if>
+			 <if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			 </if>
+			 <if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			 </if>
+	</set>
+    where merchant_id = #{merchantId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from gs_merchant where merchant_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_merchant <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_merchant <include refid="select_query_sql"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.openId != null">
+				and open_id = #{params.openId}
+			 </if>
+			 <if test="params.name != null">
+				and name = #{params.name}
+			 </if>
+			 <if test="params.isSelfManage != null">
+				and is_self_manage = #{params.isSelfManage}
+			 </if>
+			 <if test="params.introduction != null">
+				and introduction = #{params.introduction}
+			 </if>
+			 <if test="params.contact != null">
+				and contact = #{params.contact}
+			 </if>
+			 <if test="params.contactPhone != null">
+				and contact_phone = #{params.contactPhone}
+			 </if>
+			 <if test="params.address != null">
+				and address = #{params.address}
+			 </if>
+			 <if test="params.createTime != null">
+				and create_time = #{params.createTime}
+			 </if>
+	</where>
+  </sql>
+
+</mapper>

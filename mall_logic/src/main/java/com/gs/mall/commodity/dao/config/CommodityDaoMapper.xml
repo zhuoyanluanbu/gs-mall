@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.commodity.dao.CommodityDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.commodity.po.Commodity">
+			<id column="id" jdbcType="BIGINT" property="id" />
+			<result column="category_id" jdbcType="BIGINT" property="categoryId" />
+			<result column="merchant_id" jdbcType="BIGINT" property="merchantId" />
+			<result column="supplier_id" jdbcType="CHAR" property="supplierId" />
+			<result column="supplier_name" jdbcType="VARCHAR" property="supplierName" />
+			<result column="title" jdbcType="VARCHAR" property="title" />
+			<result column="sub_title" jdbcType="VARCHAR" property="subTitle" />
+			<result column="category_name" jdbcType="VARCHAR" property="categoryName" />
+			<result column="type" jdbcType="SMALLINT" property="type" />
+			<result column="freight" jdbcType="INTEGER" property="freight" />
+			<result column="freight_type" jdbcType="SMALLINT" property="freightType" />
+			<result column="min_sale_price" jdbcType="INTEGER" property="minSalePrice" />
+			<result column="max_sale_price" jdbcType="INTEGER" property="maxSalePrice" />
+			<result column="status" jdbcType="SMALLINT" property="status" />
+			<result column="is_recommend" jdbcType="SMALLINT" property="isRecommend" />
+			<result column="img_uri1" jdbcType="VARCHAR" property="imgUri1" />
+			<result column="img_uri2" jdbcType="VARCHAR" property="imgUri2" />
+			<result column="img_uri3" jdbcType="VARCHAR" property="imgUri3" />
+			<result column="img_uri4" jdbcType="VARCHAR" property="imgUri4" />
+			<result column="img_uri5" jdbcType="VARCHAR" property="imgUri5" />
+			<result column="sale_total" jdbcType="INTEGER" property="saleTotal" />
+			<result column="comment_score" jdbcType="DECIMAL" property="commentScore" />
+			<result column="comment_total" jdbcType="INTEGER" property="commentTotal" />
+			<result column="last_buy" jdbcType="TIMESTAMP" property="lastBuy" />
+			<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+			<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+			<result column="operator" jdbcType="VARCHAR" property="operator" />
+			<result column="operator_id" jdbcType="CHAR" property="operatorId" />
+	  </resultMap>
+		<resultMap id="CommodityResultMap" type="com.gs.mall.commodity.po.Commodity" extends="BaseResultMap">
+			<association property="commodityExtend" javaType="com.gs.mall.commodity.po.CommodityExtend">
+				<id column="e_extend_id" jdbcType="BIGINT" property="extendId" />
+				<result column="e_commodity_id" jdbcType="BIGINT" property="commodityId" />
+				<result column="e_type" jdbcType="SMALLINT" property="type" />
+				<result column="e_content" jdbcType="LONGVARCHAR" property="content" />
+			</association>
+			<collection property="attributeList"  ofType="com.gs.mall.commodity.po.CommodityAttributeRef">
+				<id column="a_attr_ref_id" jdbcType="BIGINT" property="attrRefId" />
+				<result column="a_commodity_id" jdbcType="BIGINT" property="commodityId" />
+				<result column="a_attribute_id" jdbcType="BIGINT" property="attributeId" />
+				<result column="a_attribute_value" jdbcType="VARCHAR" property="attributeValue" />
+				<result column="a_sort_num" jdbcType="SMALLINT" property="sortNum" />
+				<result column="a_name" jdbcType="VARCHAR" property="attributeName" />
+			</collection>
+			<collection property="detailList" ofType="com.gs.mall.commodity.po.CommodityDetail">
+				<id column="d_detail_id" jdbcType="BIGINT" property="detailId" />
+				<result column="d_commodity_id" jdbcType="BIGINT" property="commodityId" />
+				<result column="d_title" jdbcType="VARCHAR" property="title"/>
+				<result column="d_sku_id" jdbcType="VARCHAR" property="skuId" />
+				<result column="d_sku_name" jdbcType="VARCHAR" property="skuName" />
+				<result column="d_img_uri" jdbcType="VARCHAR" property="imgUri" />
+				<result column="d_sale_price" jdbcType="INTEGER" property="salePrice" />
+				<result column="d_supply_price" jdbcType="INTEGER" property="supplyPrice" />
+				<result column="d_rebate" jdbcType="REAL" property="rebate" />
+				<result column="d_inventory" jdbcType="INTEGER" property="inventory" />
+				<result column="d_bar_code" jdbcType="VARCHAR" property="barCode" />
+				<result column="d_status" jdbcType="SMALLINT" property="status" />
+				<result column="d_create_time" jdbcType="TIMESTAMP" property="createTime" />
+			</collection>
+		</resultMap>
+  
+
+  <sql id="Base_Column_List">
+		id
+		,category_id
+		,merchant_id
+		,supplier_id
+		,supplier_name
+		,title
+		,sub_title
+		,category_name
+		,type
+		,freight
+		,freight_type
+		,min_sale_price
+		,max_sale_price
+		,status
+		,is_recommend
+		,img_uri1
+		,img_uri2
+		,img_uri3
+		,img_uri4
+		,img_uri5
+		,sale_total
+		,comment_score
+		,comment_total
+		,last_buy
+		,create_time
+		,update_time
+		,operator
+		,operator_id
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Long" resultMap="CommodityResultMap">
+	  select
+	  <include refid="Commodity_Column_List" />
+	  from gs_commodity t1
+	  LEFT JOIN (gs_commodity_attribute_ref t2,gs_attribute t5) ON t1.id=t2.commodity_id and t2.attribute_id=t5.attribute_id
+	  LEFT JOIN gs_commodity_detail t3 on t1.id=t3.commodity_id and t3.status=1
+	  LEFT JOIN gs_commodity_extend t4 on t1.id=t4.commodity_id
+	  where t1.id = #{id,jdbcType=BIGINT}
+  </select>
+
+	<sql id="Commodity_Column_List">
+		t1.*,
+		t5.name a_name,t2.attribute_id a_attribute_id,t2.attribute_value a_attribute_value,t2.attr_ref_id a_attr_ref_id,t2.commodity_id a_commodity_id,t2.sort_num a_sort_num,
+		t3.bar_code d_bar_code,t3.commodity_id d_commodity_id,t3.create_time d_create_time,t3.detail_id d_detail_id,t3.img_uri d_img_uri,t3.inventory d_inventory,
+		t3.rebate d_rebate,t3.sale_price d_sale_price,t3.sku_id d_sku_id,t3.sku_name d_sku_name,t3.`status` d_status,t3.supply_price d_supply_price,t3.title d_title,
+		t4.commodity_id e_commodity_id,t4.content e_content,t4.extend_id e_extend_id,t4.type e_type
+	</sql>
+
+
+	<insert id="insert" parameterType="com.gs.mall.commodity.po.Commodity" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into gs_commodity(
+				category_id
+				,merchant_id
+				,supplier_id
+				,supplier_name
+				,title
+				,sub_title
+				,category_name
+				,type
+				,freight
+				,freight_type
+				,min_sale_price
+				,max_sale_price
+				,status
+				,is_recommend
+				,img_uri1
+				,img_uri2
+				,img_uri3
+				,img_uri4
+				,img_uri5
+				,sale_total
+				,comment_score
+				,comment_total
+				,last_buy
+				,create_time
+				,update_time
+				,operator
+				,operator_id
+	)
+	values(
+			#{categoryId,jdbcType=BIGINT}
+			,#{merchantId,jdbcType=BIGINT}
+			,#{supplierId,jdbcType=CHAR}
+			,#{supplierName,jdbcType=VARCHAR}
+			,#{title,jdbcType=VARCHAR}
+			,#{subTitle,jdbcType=VARCHAR}
+			,#{categoryName,jdbcType=VARCHAR}
+			,#{type,jdbcType=SMALLINT}
+			,#{freight,jdbcType=INTEGER}
+			,#{freightType,jdbcType=SMALLINT}
+			,#{minSalePrice,jdbcType=INTEGER}
+			,#{maxSalePrice,jdbcType=INTEGER}
+			,#{status,jdbcType=SMALLINT}
+			,#{isRecommend,jdbcType=SMALLINT}
+			,#{imgUri1,jdbcType=VARCHAR}
+			,#{imgUri2,jdbcType=VARCHAR}
+			,#{imgUri3,jdbcType=VARCHAR}
+			,#{imgUri4,jdbcType=VARCHAR}
+			,#{imgUri5,jdbcType=VARCHAR}
+			,#{saleTotal,jdbcType=INTEGER}
+			,#{commentScore,jdbcType=DECIMAL}
+			,#{commentTotal,jdbcType=INTEGER}
+			,#{lastBuy,jdbcType=TIMESTAMP}
+			,#{createTime,jdbcType=TIMESTAMP}
+			,#{updateTime,jdbcType=TIMESTAMP}
+			,#{operator,jdbcType=VARCHAR}
+			,#{operatorId,jdbcType=CHAR}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.commodity.po.Commodity">
+    update gs_commodity 
+    <set>
+			 <if test="categoryId != null">
+				category_id = #{categoryId,jdbcType=BIGINT},
+			 </if>
+			 <if test="merchantId != null">
+				merchant_id = #{merchantId,jdbcType=BIGINT},
+			 </if>
+			 <if test="supplierId != null">
+				supplier_id = #{supplierId,jdbcType=CHAR},
+			 </if>
+			 <if test="supplierName != null">
+				supplier_name = #{supplierName,jdbcType=VARCHAR},
+			 </if>
+			 <if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
+			 </if>
+			 <if test="subTitle != null">
+				sub_title = #{subTitle,jdbcType=VARCHAR},
+			 </if>
+			 <if test="categoryName != null">
+				category_name = #{categoryName,jdbcType=VARCHAR},
+			 </if>
+			 <if test="type != null">
+				type = #{type,jdbcType=SMALLINT},
+			 </if>
+			 <if test="freight != null">
+				freight = #{freight,jdbcType=INTEGER},
+			 </if>
+			 <if test="freightType != null">
+				freight_type = #{freightType,jdbcType=SMALLINT},
+			 </if>
+			 <if test="minSalePrice != null">
+				min_sale_price = #{minSalePrice,jdbcType=INTEGER},
+			 </if>
+			 <if test="maxSalePrice != null">
+				max_sale_price = #{maxSalePrice,jdbcType=INTEGER},
+			 </if>
+			 <if test="status != null">
+				status = #{status,jdbcType=SMALLINT},
+			 </if>
+			 <if test="isRecommend != null">
+				is_recommend = #{isRecommend,jdbcType=SMALLINT},
+			 </if>
+			 <if test="imgUri1 != null">
+				img_uri1 = #{imgUri1,jdbcType=VARCHAR},
+			 </if>
+			 <if test="imgUri2 != null">
+				img_uri2 = #{imgUri2,jdbcType=VARCHAR},
+			 </if>
+			 <if test="imgUri3 != null">
+				img_uri3 = #{imgUri3,jdbcType=VARCHAR},
+			 </if>
+			 <if test="imgUri4 != null">
+				img_uri4 = #{imgUri4,jdbcType=VARCHAR},
+			 </if>
+			 <if test="imgUri5 != null">
+				img_uri5 = #{imgUri5,jdbcType=VARCHAR},
+			 </if>
+			 <if test="saleTotal != null">
+				sale_total = #{saleTotal,jdbcType=INTEGER},
+			 </if>
+			 <if test="commentScore != null">
+				comment_score = #{commentScore,jdbcType=DECIMAL},
+			 </if>
+			 <if test="commentTotal != null">
+				comment_total = #{commentTotal,jdbcType=INTEGER},
+			 </if>
+			 <if test="lastBuy != null">
+				last_buy = #{lastBuy,jdbcType=TIMESTAMP},
+			 </if>
+			 <if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			 </if>
+			 <if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			 </if>
+			 <if test="operator != null">
+				operator = #{operator,jdbcType=VARCHAR},
+			 </if>
+			 <if test="operatorId != null">
+				operator_id = #{operatorId,jdbcType=CHAR},
+			 </if>
+	</set>
+    where id = #{id}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from gs_commodity where id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_commodity <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectByPa" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_commodity <include refid="commentWhere"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_commodity <include refid="select_query_sql"/> 
+  </select>
+  
+  <select id="selectCountByPa" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_commodity <include refid="commentWhere"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.categoryId != null">
+				and category_id = #{params.categoryId}
+			 </if>
+			 <if test="params.merchantId != null">
+				and merchant_id = #{params.merchantId}
+			 </if>
+			 <if test="params.supplierId != null">
+				and supplier_id = #{params.supplierId}
+			 </if>
+			 <if test="params.supplierName != null">
+				and supplier_name = #{params.supplierName}
+			 </if>
+			 <if test="params.title != null">
+				and title = #{params.title}
+			 </if>
+			 <if test="params.subTitle != null">
+				and sub_title = #{params.subTitle}
+			 </if>
+			 <if test="params.categoryName != null">
+				and category_name = #{params.categoryName}
+			 </if>
+			 <if test="params.type != null">
+				and type = #{params.type}
+			 </if>
+			 <if test="params.freight != null">
+				and freight = #{params.freight}
+			 </if>
+			 <if test="params.freightType != null">
+				and freight_type = #{params.freightType}
+			 </if>
+			 <if test="params.minSalePrice != null">
+				and min_sale_price = #{params.minSalePrice}
+			 </if>
+			 <if test="params.maxSalePrice != null">
+				and max_sale_price = #{params.maxSalePrice}
+			 </if>
+			 <if test="params.status != null">
+				and status = #{params.status}
+			 </if>
+			 <if test="params.isRecommend != null">
+				and is_recommend = #{params.isRecommend}
+			 </if>
+			 <if test="params.imgUri1 != null">
+				and img_uri1 = #{params.imgUri1}
+			 </if>
+			 <if test="params.imgUri2 != null">
+				and img_uri2 = #{params.imgUri2}
+			 </if>
+			 <if test="params.imgUri3 != null">
+				and img_uri3 = #{params.imgUri3}
+			 </if>
+			 <if test="params.imgUri4 != null">
+				and img_uri4 = #{params.imgUri4}
+			 </if>
+			 <if test="params.imgUri5 != null">
+				and img_uri5 = #{params.imgUri5}
+			 </if>
+			 <if test="params.saleTotal != null">
+				and sale_total = #{params.saleTotal}
+			 </if>
+			 <if test="params.commentScore != null">
+				and comment_score = #{params.commentScore}
+			 </if>
+			 <if test="params.commentTotal != null">
+				and comment_total = #{params.commentTotal}
+			 </if>
+			 <if test="params.lastBuy != null">
+				and last_buy = #{params.lastBuy}
+			 </if>
+			 <if test="params.createTime != null">
+				and create_time = #{params.createTime}
+			 </if>
+			 <if test="params.updateTime != null">
+				and update_time = #{params.updateTime}
+			 </if>
+			 <if test="params.operator != null">
+				and operator = #{params.operator}
+			 </if>
+			 <if test="params.operatorId != null">
+				and operator_id = #{params.operatorId}
+			 </if>
+	</where>
+  </sql>
+
+	<!--changeCommodityCategory-->
+	<update id="changeCommodityCategory" parameterType="map">
+		update gs_commodity set category_id=#{toCategory},category_name=#{toCategoryName}
+		where category_id=#{fromCategory} OR category_id in(SELECT category_id from gs_category where parent_id=#{fromCategory} )
+	</update>
+
+	<!--根据id批量修改商品状态-->
+	<update id="batchUpdateByIds" parameterType="map">
+		UPDATE gs_commodity SET operator=#{params.operator},operator_id=#{params.operatorId},update_time=now()
+		<if test="params.toStatus!=null">,status=#{params.toStatus}</if>
+		<if test="params.toCategoryId!=null">,category_id=#{params.toCategoryId}</if>
+		<if test="params.toCategoryName!=null">,category_name=#{params.toCategoryName}</if>
+		WHERE id IN
+		<foreach collection="params.ids" item="id" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</update>
+
+
+	<!--根据查询条件批量修改商品状态-->
+	<update id="batchUpdateByParam" parameterType="map">
+		UPDATE gs_commodity SET operator=#{params.operator},operator_id=#{params.operatorId},update_time=now()
+		<if test="params.toStatus!=null">,status=#{params.toStatus}</if>
+		<if test="params.toCategoryId!=null">,category_id=#{params.toCategoryId}</if>
+		<if test="params.toCategoryName!=null">,category_name=#{params.toCategoryName}</if>
+		<include refid="commentWhere"/>
+	</update>
+
+	<sql id="commentWhere">
+		<where>
+			<if test="params.merchantId != null and params.merchantId != ''">
+				and merchant_id = #{params.merchantId}
+			</if>
+			<if test="params.status != null">
+				and status = #{params.status}
+			</if>
+			<if test="params.nonStatus != null and params.nonStatus != ''">
+				and status != #{params.nonStatus}
+			</if>
+			<if test="params.categoryId != null and params.categoryId != ''">
+				and category_id = #{params.categoryId}
+			</if>
+			<if test="params.supplierId != null and params.supplierId != ''">
+				and supplier_id = #{params.supplierId}
+			</if>
+			<if test="params.title != null and params.title != ''">
+				and title = #{params.title}
+			</if>
+			<if test="params.titleLike != null and params.titleLike != ''">
+				and title LIKE concat(concat('%',#{params.titleLike}),'%')
+			</if>
+			<if test="params.categoryIds!=null">
+				and category_id IN
+				<foreach collection="params.categoryIds" item="id" open="(" close=")" separator=",">
+					#{id}
+				</foreach>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询批量操作商品的id数组-->
+	<select id="querybatchIds" parameterType="java.util.HashMap" resultType="object">
+		select id from gs_commodity <include refid="commentWhere"/>
+	</select>
+
+	<update id="batchUpdateSaleTotalLastBuy" parameterType="java.util.List" >
+		<foreach collection="list" open="" separator=";" close="" item="mp">
+			UPDATE gs_commodity SET sale_total=IFNULL(sale_total,0)+${mp.saleNum},last_buy=#{mp.lastBuy} where id = #{mp.id}
+		</foreach>
+	</update>
+
+	<select id="serach" parameterType="string" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"/> from gs_commodity
+		WHERE status=1 and  id in(${value})  ORDER  by find_in_set(id,#{value})
+	</select>
+
+	<select id="queryByIdAndSkuId" parameterType="map" resultType="com.gs.mall.commodity.dto.CommoditySkuDto">
+		SELECT
+		t1.id as id,
+		t1.supplier_name as supplierName,
+		t1.title as title,
+		t1.sub_title as subTitle,
+		t1.type as type,
+		t1.freight as freight,
+		t1.freight_type as freightType,
+		t2.sku_id as skuId,
+		t2.img_uri as imgUri,
+		t2.sku_name as skuName,
+		t2.sale_price as salePrice,
+		t2.inventory as inventory,
+		t2.bar_code as barCode
+		FROM `gs_commodity` t1,`gs_commodity_detail` t2
+		WHERE t1.id=t2.commodity_id and t1.id=#{params.id,jdbcType=BIGINT} and t2.sku_id=#{params.skuId,jdbcType=VARCHAR};
+	</select>
+
+
+	<select id="getAllInventory" resultType="java.util.Map">
+		SELECT
+		gc.id,gcd.sku_id skuId,
+		gcd.inventory num
+		FROM
+		`gs_commodity` gc,
+		`gs_commodity_detail` gcd
+		WHERE
+		gc.id = gcd.commodity_id
+		AND gc.`status` != -1
+		AND gcd.`status` != -1;
+	</select>
+	
+	<select id="serach2" resultMap="BaseResultMap">
+		SELECT
+			c.*
+		FROM
+			gs_commodity c
+		LEFT JOIN gs_commodity_detail d ON c.id = d.commodity_id
+		WHERE
+			c.title like concat('%',#{keyWords},'%')
+		OR c.supplier_name like concat('%',#{keyWords},'%')
+		OR c.category_name like concat('%',#{keyWords},'%')
+		OR d.sku_name like concat('%',#{keyWords},'%')
+		OR c.sub_title like concat('%',#{keyWords},'%')
+		OR d.bar_code like concat('%',#{keyWords},'%')
+		AND c.`status` = 1
+		GROUP BY
+			c.id
+		limit  #{startIndex}, #{fetchSize}
+	</select>
+	
+	<select id="countSerach2" resultType="int" parameterType="string">
+	SELECT count(*) items from ( select c.* 
+		FROM
+			gs_commodity c
+		LEFT JOIN gs_commodity_detail d ON c.id = d.commodity_id
+		WHERE
+			c.title like concat('%',#{keyWords},'%')
+		OR c.supplier_name like concat('%',#{keyWords},'%')
+		OR c.category_name like concat('%',#{keyWords},'%')
+		OR d.sku_name like concat('%',#{keyWords},'%')
+		OR c.sub_title like concat('%',#{keyWords},'%')
+		OR d.bar_code like concat('%',#{keyWords},'%')
+		AND c.`status` = 1
+		GROUP BY
+			c.id) a
+	</select>
+
+</mapper>

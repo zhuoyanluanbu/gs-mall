@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.finance.dao.TradeAmountDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.finance.po.TradeAmount">
+			<id column="ta_id" jdbcType="BIGINT" property="taId" />
+			<result column="merchant_id" jdbcType="BIGINT" property="merchantId" />
+			<result column="amount" jdbcType="INTEGER" property="amount" />
+			<result column="create_date" jdbcType="DATE" property="createDate" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		ta_id
+		,merchant_id
+		,amount
+		,create_date
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_trade_amount 
+    where ta_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.finance.po.TradeAmount" useGeneratedKeys="true" keyColumn="ta_id" keyProperty="taId">
+    insert into gs_trade_amount(
+				merchant_id
+				,amount
+				,create_date
+	)
+	values(
+			#{merchantId,jdbcType=BIGINT}
+			,#{amount,jdbcType=INTEGER}
+			,#{createDate,jdbcType=DATE}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.finance.po.TradeAmount">
+    update gs_trade_amount 
+    <set>
+			 <if test="merchantId != null">
+				merchant_id = #{merchantId,jdbcType=BIGINT},
+			 </if>
+			 <if test="amount != null">
+				amount = #{amount,jdbcType=INTEGER},
+			 </if>
+			 <if test="createDate != null">
+				create_date = #{createDate,jdbcType=DATE},
+			 </if>
+	</set>
+    where ta_id = #{taId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from gs_trade_amount where ta_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_trade_amount <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_trade_amount <include refid="select_query_sql"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.merchantId != null">
+				and merchant_id = #{params.merchantId}
+			 </if>
+			 <if test="params.amount != null">
+				and amount = #{params.amount}
+			 </if>
+			 <if test="params.createDate != null">
+				and create_date = #{params.createDate}
+			 </if>
+	</where>
+  </sql>
+
+
+	<select id="querylatestDate" resultType="java.sql.Date">
+		select max(create_date) cd from gs_trade_amount
+	</select>
+
+	<select id="queryAmountByDate" resultType="java.lang.Integer">
+		select amount from gs_trade_amount where  merchant_id = #{merchantId} and create_date = #{date}
+	</select>
+
+	<select id="queryAmountByScope" resultType="java.lang.Integer">
+		select sum(amount) cd from gs_trade_amount where merchant_id = #{merchantId}
+		<if test="startDate != null">
+			and create_date &gt;= #{startDate}
+		</if>
+		<if test="endDate != null">
+			and create_date &lt;= #{endDate}
+		</if>
+	</select>
+	
+	<insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="true" keyColumn="ta_id">
+	        insert into gs_trade_amount ( merchant_id, amount , create_date )
+	    values
+	    <foreach collection="list" open="" separator="," close="" item="ta">
+	    ( #{ta.merchantId,jdbcType=BIGINT},#{ta.amount,jdbcType=INTEGER},#{ta.createDate,jdbcType=DATE} )
+	    </foreach>
+	</insert>
+
+</mapper>

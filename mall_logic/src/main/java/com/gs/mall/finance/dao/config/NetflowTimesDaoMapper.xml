@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.finance.dao.NetflowTimesDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.finance.po.NetflowTimes">
+			<id column="nt_id" jdbcType="BIGINT" property="ntId" />
+			<result column="times" jdbcType="INTEGER" property="times" />
+			<result column="create_date" jdbcType="DATE" property="createDate" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		nt_id
+		,times
+		,create_date
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_netflow_times 
+    where nt_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.finance.po.NetflowTimes" useGeneratedKeys="true" keyColumn="nt_id" keyProperty="ntId">
+    insert into gs_netflow_times(
+				times
+				,create_date
+	)
+	values(
+			#{times,jdbcType=INTEGER}
+			,#{createDate,jdbcType=DATE}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.finance.po.NetflowTimes">
+    update gs_netflow_times 
+    <set>
+			 <if test="times != null">
+				times = #{times,jdbcType=INTEGER},
+			 </if>
+			 <if test="createDate != null">
+				create_date = #{createDate,jdbcType=DATE},
+			 </if>
+	</set>
+    where nt_id = #{ntId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from gs_netflow_times where nt_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_netflow_times <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_netflow_times <include refid="select_query_sql"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.times != null">
+				and times = #{params.times}
+			 </if>
+			 <if test="params.createDate != null">
+				and create_date = #{params.createDate}
+			 </if>
+	</where>
+  </sql>
+
+	<select id="querylatestDate" resultType="java.sql.Date">
+		select max(create_date) cd from gs_netflow_times
+	</select>
+
+	<select id="queryTimesByDate" resultType="java.lang.Integer">
+		select times from gs_netflow_times where create_date = #{date}
+	</select>
+
+	<select id="queryTimesByScope" resultType="java.lang.Integer">
+		select sum(times) ts from gs_netflow_times where create_date &gt;= #{startDate} and create_date &lt;= #{endDate}
+	</select>
+	
+	<insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="true" keyColumn="nt_id">
+	     insert into gs_netflow_times ( times, create_date )
+	    values
+	     <foreach collection="list" open="" separator="," close="" item="nt">
+	      ( #{nt.times,jdbcType=INTEGER},#{nt.createDate,jdbcType=DATE} )
+	     </foreach>
+ 	 </insert>
+
+
+</mapper>

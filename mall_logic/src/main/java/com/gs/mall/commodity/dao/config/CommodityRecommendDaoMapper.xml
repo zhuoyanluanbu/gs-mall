@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.commodity.dao.CommodityRecommendDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.commodity.po.CommodityRecommend">
+			<id column="cr_id" jdbcType="INTEGER" property="crId" />
+			<result column="commodity_id" jdbcType="BIGINT" property="commodityId" />
+			<result column="display_name" jdbcType="VARCHAR" property="displayName" />
+			<result column="sort_num" jdbcType="SMALLINT" property="sortNum" />
+			<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		cr_id
+		,commodity_id
+		,display_name
+		,sort_num
+		,create_time
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_commodity_recommend 
+    where cr_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.commodity.po.CommodityRecommend" useGeneratedKeys="true" keyColumn="cr_id" keyProperty="crId">
+    insert into gs_commodity_recommend(
+				commodity_id
+				,display_name
+				,sort_num
+				,create_time
+	)
+	values(
+			#{commodityId,jdbcType=BIGINT}
+			,#{displayName,jdbcType=VARCHAR}
+			,#{sortNum,jdbcType=SMALLINT}
+			,#{createTime,jdbcType=TIMESTAMP}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.commodity.po.CommodityRecommend">
+    update gs_commodity_recommend 
+    <set>
+			 <if test="commodityId != null">
+				commodity_id = #{commodityId,jdbcType=BIGINT},
+			 </if>
+			 <if test="displayName != null">
+				display_name = #{displayName,jdbcType=VARCHAR},
+			 </if>
+			 <if test="sortNum != null">
+				sort_num = #{sortNum,jdbcType=SMALLINT},
+			 </if>
+			 <if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			 </if>
+	</set>
+    where cr_id = #{crId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    delete from gs_commodity_recommend where cr_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_commodity_recommend <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_commodity_recommend <include refid="select_query_sql"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.commodityId != null">
+				and commodity_id = #{params.commodityId}
+			 </if>
+			 <if test="params.displayName != null">
+				and display_name = #{params.displayName}
+			 </if>
+			 <if test="params.sortNum != null">
+				and sort_num = #{params.sortNum}
+			 </if>
+			 <if test="params.createTime != null">
+				and create_time = #{params.createTime}
+			 </if>
+	</where>
+  </sql>
+
+
+	<select id="recommendList" resultType="java.util.HashMap">
+		select t2.id,t2.`type`,t2.min_sale_price minSalePrice,t2.max_sale_price maxSalePrice,t1.display_name title,t2.img_uri1 imgUri1,t2.sub_title subTitle,t2.title commodityName
+		from gs_commodity_recommend t1
+		INNER  JOIN gs_commodity t2 ON  t1.commodity_id=t2.id
+		<if test="params.status!=null"> and t2.status=#{params.status}</if>
+		order by t1.sort_num asc limit #{startIndex},#{fetchSize}
+	</select>
+
+
+	<select id="recommendCount" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+		select count(1)
+		from gs_commodity_recommend t1
+		INNER  JOIN gs_commodity t2 ON  t1.commodity_id=t2.id
+		<if test="params.status!=null"> and t2.status=#{params.status}</if>
+	</select>
+
+	<select id="maxSortNum" resultType="short">
+		SELECT IFNULL(max(sort_num),0) from gs_commodity_recommend
+	</select>
+
+	<delete id="delRecommend" parameterType="long">
+		delete from gs_commodity_recommend where commodity_id=#{value}
+	</delete>
+
+	<select id="isRecommended" parameterType="long" resultType="int">
+		select count(0) from gs_commodity_recommend where commodity_id=#{value}
+	</select>
+	
+	<select id="selectByCommdityId" parameterType="long" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List" /> from gs_commodity_recommend where commodity_id=#{value}
+	</select>
+
+
+	<update id="updateDisplayName" parameterType="com.gs.mall.commodity.po.CommodityRecommend">
+		update gs_commodity_recommend
+		<set>
+			<if test="displayName != null">
+				display_name = #{displayName,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where commodity_id = #{commodityId,jdbcType=BIGINT}
+	</update>
+
+</mapper>

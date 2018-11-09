@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.order.dao.WorkOrderDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.order.po.WorkOrder">
+			<id column="wo_id" jdbcType="CHAR" property="woId" />
+			<result column="order_id" jdbcType="CHAR" property="orderId" />
+			<result column="logistics_id" jdbcType="BIGINT" property="logisticsId" />
+			<result column="merchant_id" jdbcType="BIGINT" property="merchantId" />
+			<result column="snapshoot_id" jdbcType="BIGINT" property="snapshootId" />
+			<result column="type" jdbcType="SMALLINT" property="type" />
+			<result column="comment" jdbcType="VARCHAR" property="comment" />
+			<result column="img_uri1" jdbcType="VARCHAR" property="imgUri1" />
+			<result column="img_uri2" jdbcType="VARCHAR" property="imgUri2" />
+			<result column="img_uri3" jdbcType="VARCHAR" property="imgUri3" />
+			<result column="receiver" jdbcType="VARCHAR" property="receiver" />
+			<result column="receiver_tel" jdbcType="VARCHAR" property="receiverTel" />
+			<result column="close_reason" jdbcType="VARCHAR" property="closeReason" />
+			<result column="status" jdbcType="INTEGER" property="status" />
+			<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+			<result column="amount" jdbcType="INTEGER" property="amount" />
+			<result column="is_freight" jdbcType="INTEGER" property="isFreight" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		wo_id
+		,order_id
+		,logistics_id
+		,merchant_id
+		,snapshoot_id
+		,type
+		,comment
+		,img_uri1
+		,img_uri2
+		,img_uri3
+		,receiver
+		,receiver_tel
+		,close_reason
+		,status
+		,create_time
+		,amount
+		,is_freight
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_work_order 
+    where wo_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.order.po.WorkOrder">
+    insert into gs_work_order( <include refid="Base_Column_List"/> )
+    values(
+			#{woId,jdbcType=CHAR}
+			,#{orderId,jdbcType=CHAR}
+			,#{logisticsId,jdbcType=BIGINT}
+			,#{merchantId,jdbcType=BIGINT}
+			,#{snapshootId,jdbcType=BIGINT}
+			,#{type,jdbcType=SMALLINT}
+			,#{comment,jdbcType=VARCHAR}
+			,#{imgUri1,jdbcType=VARCHAR}
+			,#{imgUri2,jdbcType=VARCHAR}
+			,#{imgUri3,jdbcType=VARCHAR}
+			,#{receiver,jdbcType=VARCHAR}
+			,#{receiverTel,jdbcType=VARCHAR}
+			,#{closeReason,jdbcType=VARCHAR}
+			,#{status,jdbcType=INTEGER}
+			,#{createTime,jdbcType=TIMESTAMP}
+			,#{amount,jdbcType=INTEGER}
+			,#{isFreight,jdbcType=INTEGER}
+	)
+  </insert>	
+
+  <update id="update" parameterType="com.gs.mall.order.po.WorkOrder">
+    update gs_work_order 
+    <set>
+			 <if test="orderId != null">
+				order_id = #{orderId,jdbcType=CHAR},
+			 </if>
+			 <if test="logisticsId != null">
+				logistics_id = #{logisticsId,jdbcType=BIGINT},
+			 </if>
+			 <if test="merchantId != null">
+				merchant_id = #{merchantId,jdbcType=BIGINT},
+			 </if>
+			 <if test="snapshootId != null">
+				snapshoot_id = #{snapshootId,jdbcType=BIGINT},
+			 </if>
+			 <if test="type != null">
+				type = #{type,jdbcType=SMALLINT},
+			 </if>
+			 <if test="comment != null">
+				comment = #{comment,jdbcType=VARCHAR},
+			 </if>
+			 <if test="imgUri1 != null">
+				img_uri1 = #{imgUri1,jdbcType=VARCHAR},
+			 </if>
+			 <if test="imgUri2 != null">
+				img_uri2 = #{imgUri2,jdbcType=VARCHAR},
+			 </if>
+			 <if test="imgUri3 != null">
+				img_uri3 = #{imgUri3,jdbcType=VARCHAR},
+			 </if>
+			 <if test="receiver != null">
+				receiver = #{receiver,jdbcType=VARCHAR},
+			 </if>
+			 <if test="receiverTel != null">
+				receiver_tel = #{receiverTel,jdbcType=VARCHAR},
+			 </if>
+			 <if test="closeReason != null">
+				close_reason = #{closeReason,jdbcType=VARCHAR},
+			 </if>
+			 <if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			 </if>
+			 <if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			 </if>
+			 <if test="amount != null">
+				amount = #{amount,jdbcType=INTEGER},
+			 </if>
+			 <if test="isFreight != null">
+				is_freight = #{isFreight,jdbcType=INTEGER},
+			 </if>
+	</set>
+    where wo_id = #{woId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.String">
+    delete from gs_work_order where wo_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_work_order <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectByPa" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_work_order <include refid="commentWhere"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_work_order <include refid="select_query_sql"/> 
+  </select>
+  
+  <select id="selectCountByPa" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_work_order <include refid="commentWhere"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.orderId != null">
+				and order_id = #{params.orderId}
+			 </if>
+			 <if test="params.logisticsId != null">
+				and logistics_id = #{params.logisticsId}
+			 </if>
+			 <if test="params.merchantId != null">
+				and merchant_id = #{params.merchantId}
+			 </if>
+			 <if test="params.snapshootId != null">
+				and snapshoot_id = #{params.snapshootId}
+			 </if>
+			 <if test="params.type != null">
+				and type = #{params.type}
+			 </if>
+			 <if test="params.comment != null">
+				and comment = #{params.comment}
+			 </if>
+			 <if test="params.imgUri1 != null">
+				and img_uri1 = #{params.imgUri1}
+			 </if>
+			 <if test="params.imgUri2 != null">
+				and img_uri2 = #{params.imgUri2}
+			 </if>
+			 <if test="params.imgUri3 != null">
+				and img_uri3 = #{params.imgUri3}
+			 </if>
+			 <if test="params.receiver != null">
+				and receiver = #{params.receiver}
+			 </if>
+			 <if test="params.receiverTel != null">
+				and receiver_tel = #{params.receiverTel}
+			 </if>
+			 <if test="params.closeReason != null">
+				and close_reason = #{params.closeReason}
+			 </if>
+			 <if test="params.status != null">
+				and status = #{params.status}
+			 </if>
+			 <if test="params.createTime != null">
+				and create_time = #{params.createTime}
+			 </if>
+			 <if test="params.amount != null">
+				and amount = #{params.amount}
+			 </if>
+			 <if test="params.isFreight != null">
+				and is_freight = #{params.isFreight}
+			 </if>
+			 <if test="params.beginDate != null">
+		       	and create_time &gt;= #{params.beginDate}
+		     </if>
+		     <if test="params.endDate != null">
+		       	and create_time &lt;= #{params.endDate}
+		     </if>
+	</where>
+  </sql>
+
+
+	<select id="query" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		select <include refid="Base_Column_List"/> from gs_work_order
+		<where>
+			<if test="params.orderId != null">
+				and `order_id` = #{params.orderId}
+			</if>
+
+		</where>
+	</select>
+
+	<select id="queryLink" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		select <include refid="Base_Column_List"/> from gs_work_order
+		<where>
+			<if test="params.orderId != null">
+				and `order_id` = #{params.orderId}
+			</if>
+			<if test="params.workOrderId != null">
+				and `wo_id` != #{params.workOrderId}
+			</if>
+		</where>
+	</select>
+
+	<sql id="commentWhere">
+		<where>
+			<if test="params.merchantId != null">
+				and merchant_id = #{params.merchantId}
+			</if>
+			<if test="params.orderId != null">
+				and `order_id` = #{params.orderId}
+			</if>
+			<if test="params.openId != null">
+				and `order_id` in (<include refid="usersOrders"/>)
+			</if>
+			<if test="params.workOrderId !=null">
+				and wo_id like CONCAT('%',#{params.workOrderId},'%')
+			</if>
+			<if test="params.receiver !=null">
+				and receiver like CONCAT('%',#{params.receiver},'%')
+			</if>
+			<if test="params.receiverTel !=null">
+				and receiver_tel like CONCAT('%',#{params.receiverTel},'%')
+			</if>
+			<if test="params.status !=null">
+				and status = #{params.status}
+			</if>
+			<if test="params.beginDate != null">
+				and create_time &gt;= #{params.beginDate}
+			</if>
+			<if test="params.endDate != null">
+				and create_time &lt;= #{params.endDate}
+			</if>
+			<if test="params.filterReson !=null and params.filterReson!=''">
+				and close_reason != #{params.filterReson}
+			</if>
+
+		</where>
+	</sql>
+
+	<sql id="usersOrders">
+		select order_id from gs_order where owner_open_id = #{params.openId}
+	</sql>
+
+</mapper>

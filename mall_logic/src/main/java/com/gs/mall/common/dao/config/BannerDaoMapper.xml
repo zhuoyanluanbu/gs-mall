@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.common.dao.BannerDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.common.po.Banner">
+			<id column="banner_id" jdbcType="INTEGER" property="bannerId" />
+			<result column="img_uri" jdbcType="VARCHAR" property="imgUri" />
+			<result column="link_url" jdbcType="VARCHAR" property="linkUrl" />
+			<result column="status" jdbcType="SMALLINT" property="status" />
+			<result column="sort_num" jdbcType="SMALLINT" property="sortNum" />
+			<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+			<result column="banner_text" jdbcType="VARCHAR" property="bannerText" />
+			<result column="operator" jdbcType="VARCHAR" property="operator" />
+			<result column="operator_id" jdbcType="CHAR" property="operatorId" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		banner_id
+		,img_uri
+		,link_url
+		,status
+		,sort_num
+		,create_time
+		,banner_text
+		,operator
+		,operator_id
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_banner 
+    where banner_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.common.po.Banner" useGeneratedKeys="true" keyColumn="banner_id" keyProperty="bannerId">
+    insert into gs_banner(
+				img_uri
+				,link_url
+				,status
+				,sort_num
+				,create_time
+				,banner_text
+				,operator
+				,operator_id
+	)
+	values(
+			#{imgUri,jdbcType=VARCHAR}
+			,#{linkUrl,jdbcType=VARCHAR}
+			,#{status,jdbcType=SMALLINT}
+			,#{sortNum,jdbcType=SMALLINT}
+			,#{createTime,jdbcType=TIMESTAMP}
+			,#{bannerText,jdbcType=VARCHAR}
+			,#{operator,jdbcType=VARCHAR}
+			,#{operatorId,jdbcType=CHAR}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.common.po.Banner">
+    update gs_banner 
+    <set>
+			 <if test="imgUri != null">
+				img_uri = #{imgUri,jdbcType=VARCHAR},
+			 </if>
+			 <if test="linkUrl != null">
+				link_url = #{linkUrl,jdbcType=VARCHAR},
+			 </if>
+			 <if test="status != null">
+				status = #{status,jdbcType=SMALLINT},
+			 </if>
+			 <if test="sortNum != null">
+				sort_num = #{sortNum,jdbcType=SMALLINT},
+			 </if>
+			 <if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			 </if>
+			 <if test="bannerText != null">
+				banner_text = #{bannerText,jdbcType=VARCHAR},
+			 </if>
+			 <if test="operator != null">
+				operator = #{operator,jdbcType=VARCHAR},
+			 </if>
+			 <if test="operatorId != null">
+				operator_id = #{operatorId,jdbcType=CHAR},
+			 </if>
+	</set>
+    where banner_id = #{bannerId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    delete from gs_banner where banner_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_banner <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_banner <include refid="select_query_sql"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.imgUri != null">
+				and img_uri = #{params.imgUri}
+			 </if>
+			 <if test="params.linkUrl != null">
+				and link_url = #{params.linkUrl}
+			 </if>
+			 <if test="params.status != null">
+				and status = #{params.status}
+			 </if>
+			 <if test="params.sortNum != null">
+				and sort_num = #{params.sortNum}
+			 </if>
+			 <if test="params.createTime != null">
+				and create_time = #{params.createTime}
+			 </if>
+			 <if test="params.bannerText != null">
+				and banner_text = #{params.bannerText}
+			 </if>
+			 <if test="params.operator != null">
+				and operator = #{params.operator}
+			 </if>
+			 <if test="params.operatorId != null">
+				and operator_id = #{params.operatorId}
+			 </if>
+	</where>
+  </sql>
+
+
+	<select id="allBanners" parameterType="int" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"/> from gs_banner
+		<where>
+			<if test="value!=null"> status=#{value}</if>
+		</where>
+		order by sort_num asc
+	</select>
+
+	<select id="maxSortNum" resultType="java.lang.Integer">
+		SELECT IFNULL(max(sort_num),0) from gs_banner
+	</select>
+
+</mapper>

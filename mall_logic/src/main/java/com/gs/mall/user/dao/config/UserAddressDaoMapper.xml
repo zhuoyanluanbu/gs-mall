@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.user.dao.UserAddressDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.user.po.UserAddress">
+			<id column="user_addr_id" jdbcType="BIGINT" property="userAddrId" />
+			<result column="open_id" jdbcType="CHAR" property="openId" />
+			<result column="username" jdbcType="VARCHAR" property="username" />
+			<result column="mobile" jdbcType="VARCHAR" property="mobile" />
+			<result column="province_id" jdbcType="INTEGER" property="provinceId" />
+			<result column="province" jdbcType="VARCHAR" property="province" />
+			<result column="city_id" jdbcType="INTEGER" property="cityId" />
+			<result column="city" jdbcType="VARCHAR" property="city" />
+			<result column="area_id" jdbcType="INTEGER" property="areaId" />
+			<result column="area" jdbcType="VARCHAR" property="area" />
+			<result column="address" jdbcType="VARCHAR" property="address" />
+			<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		user_addr_id
+		,open_id
+		,username
+		,mobile
+		,province_id
+		,province
+		,city_id
+		,city
+		,area_id
+		,area
+		,address
+		,create_time
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_user_address 
+    where user_addr_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.user.po.UserAddress" useGeneratedKeys="true" keyColumn="user_addr_id" keyProperty="userAddrId">
+    insert into gs_user_address(
+				open_id
+				,username
+				,mobile
+				,province_id
+				,province
+				,city_id
+				,city
+				,area_id
+				,area
+				,address
+				,create_time
+	)
+	values(
+			#{openId,jdbcType=CHAR}
+			,#{username,jdbcType=VARCHAR}
+			,#{mobile,jdbcType=VARCHAR}
+			,#{provinceId,jdbcType=INTEGER}
+			,#{province,jdbcType=VARCHAR}
+			,#{cityId,jdbcType=INTEGER}
+			,#{city,jdbcType=VARCHAR}
+			,#{areaId,jdbcType=INTEGER}
+			,#{area,jdbcType=VARCHAR}
+			,#{address,jdbcType=VARCHAR}
+			,#{createTime,jdbcType=TIMESTAMP}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.user.po.UserAddress">
+    update gs_user_address 
+    <set>
+			 <if test="openId != null">
+				open_id = #{openId,jdbcType=CHAR},
+			 </if>
+			 <if test="username != null">
+				username = #{username,jdbcType=VARCHAR},
+			 </if>
+			 <if test="mobile != null">
+				mobile = #{mobile,jdbcType=VARCHAR},
+			 </if>
+			 <if test="provinceId != null">
+				province_id = #{provinceId,jdbcType=INTEGER},
+			 </if>
+			 <if test="province != null">
+				province = #{province,jdbcType=VARCHAR},
+			 </if>
+			 <if test="cityId != null">
+				city_id = #{cityId,jdbcType=INTEGER},
+			 </if>
+			 <if test="city != null">
+				city = #{city,jdbcType=VARCHAR},
+			 </if>
+			 <if test="areaId != null">
+				area_id = #{areaId,jdbcType=INTEGER},
+			 </if>
+			 <if test="area != null">
+				area = #{area,jdbcType=VARCHAR},
+			 </if>
+			 <if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			 </if>
+			 <if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			 </if>
+	</set>
+    where user_addr_id = #{userAddrId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from gs_user_address where user_addr_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_user_address <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_user_address <include refid="select_query_sql"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.openId != null">
+				and open_id = #{params.openId}
+			 </if>
+			 <if test="params.username != null">
+				and username = #{params.username}
+			 </if>
+			 <if test="params.mobile != null">
+				and mobile = #{params.mobile}
+			 </if>
+			 <if test="params.provinceId != null">
+				and province_id = #{params.provinceId}
+			 </if>
+			 <if test="params.province != null">
+				and province = #{params.province}
+			 </if>
+			 <if test="params.cityId != null">
+				and city_id = #{params.cityId}
+			 </if>
+			 <if test="params.city != null">
+				and city = #{params.city}
+			 </if>
+			 <if test="params.areaId != null">
+				and area_id = #{params.areaId}
+			 </if>
+			 <if test="params.area != null">
+				and area = #{params.area}
+			 </if>
+			 <if test="params.address != null">
+				and address = #{params.address}
+			 </if>
+			 <if test="params.createTime != null">
+				and create_time = #{params.createTime}
+			 </if>
+	</where>
+  </sql>
+
+</mapper>

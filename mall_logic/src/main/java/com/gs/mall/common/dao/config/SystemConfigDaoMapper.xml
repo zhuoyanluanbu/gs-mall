@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.common.dao.SystemConfigDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.common.po.SystemConfig">
+			<id column="config_id" jdbcType="BIGINT" property="configId" />
+			<result column="config_key" jdbcType="VARCHAR" property="configKey" />
+			<result column="config_value" jdbcType="VARCHAR" property="configValue" />
+			<result column="description" jdbcType="VARCHAR" property="description" />
+			<result column="status" jdbcType="SMALLINT" property="status" />
+			<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+			<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+			<result column="operator" jdbcType="VARCHAR" property="operator" />
+			<result column="operator_id" jdbcType="CHAR" property="operatorId" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		config_id
+		,config_key
+		,config_value
+		,description
+		,status
+		,create_time
+		,update_time
+		,operator
+		,operator_id
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_system_config 
+    where config_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.common.po.SystemConfig" useGeneratedKeys="true" keyColumn="config_id" keyProperty="configId">
+    insert into gs_system_config(
+				config_key
+				,config_value
+				,description
+				,status
+				,create_time
+				,update_time
+				,operator
+				,operator_id
+	)
+	values(
+			#{configKey,jdbcType=VARCHAR}
+			,#{configValue,jdbcType=VARCHAR}
+			,#{description,jdbcType=VARCHAR}
+			,#{status,jdbcType=SMALLINT}
+			,#{createTime,jdbcType=TIMESTAMP}
+			,#{updateTime,jdbcType=TIMESTAMP}
+			,#{operator,jdbcType=VARCHAR}
+			,#{operatorId,jdbcType=CHAR}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.common.po.SystemConfig">
+    update gs_system_config 
+    <set>
+			 <if test="configKey != null">
+				config_key = #{configKey,jdbcType=VARCHAR},
+			 </if>
+			 <if test="configValue != null">
+				config_value = #{configValue,jdbcType=VARCHAR},
+			 </if>
+			 <if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			 </if>
+			 <if test="status != null">
+				status = #{status,jdbcType=SMALLINT},
+			 </if>
+			 <if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			 </if>
+			 <if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			 </if>
+			 <if test="operator != null">
+				operator = #{operator,jdbcType=VARCHAR},
+			 </if>
+			 <if test="operatorId != null">
+				operator_id = #{operatorId,jdbcType=CHAR},
+			 </if>
+	</set>
+    where config_id = #{configId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from gs_system_config where config_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_system_config <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_system_config <include refid="select_query_sql"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.configKey != null">
+				and config_key = #{params.configKey}
+			 </if>
+			 <if test="params.configValue != null">
+				and config_value = #{params.configValue}
+			 </if>
+			 <if test="params.description != null">
+				and description = #{params.description}
+			 </if>
+			 <if test="params.status != null">
+				and status = #{params.status}
+			 </if>
+			 <if test="params.createTime != null">
+				and create_time = #{params.createTime}
+			 </if>
+			 <if test="params.updateTime != null">
+				and update_time = #{params.updateTime}
+			 </if>
+			 <if test="params.operator != null">
+				and operator = #{params.operator}
+			 </if>
+			 <if test="params.operatorId != null">
+				and operator_id = #{params.operatorId}
+			 </if>
+	</where>
+  </sql>
+
+	<select id="getByKey" parameterType="string" resultMap="BaseResultMap" >
+		select <include refid="Base_Column_List" />
+		from gs_system_config
+		where config_key = #{value}
+	</select>
+
+
+	<update id="updateByKey" parameterType="com.gs.mall.common.po.SystemConfig">
+		update gs_system_config
+		<set>
+			<if test="configKey != null">
+				config_key = #{configKey,jdbcType=VARCHAR},
+			</if>
+			<if test="configValue != null">
+				config_value = #{configValue,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=SMALLINT},
+			</if>
+			<if test="operator != null">
+				operator = #{operator,jdbcType=VARCHAR},
+			</if>
+			<if test="operatorId != null">
+				operator_id = #{operatorId,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where config_key = #{configKey,jdbcType=VARCHAR}
+	</update>
+
+</mapper>

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<Configuration status="info" monitorInterval="300">
+    <!-- 
+    [status] status设置为debug，这样用户可以在Eclipse的console看到Log4j2启动和加载配置文件时的打印信息。
+    [monitorInterval] 是用来设置配置文件的动态加载时间的，单位是秒。monitorInterval="300"表示每300秒配置文件会动态加载一次。
+           在程序运行过程中，如果修改配置文件，程序会随之改变。
+     -->
+    <!-- 
+       <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+       <PatternLayout pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %logger{36} - %msg%n" />
+       <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %level [%t] %c(%F:%M:%L) - %m%n" />
+                    时间 级别 日志名 文件名 类名 方法名 行数 日志信息
+      <PatternLayout pattern="%d %level [%t] %c(%F:%M:%L) - %m%n" />
+    -->
+    <properties>
+        <property name="LOG_HOME">/var/log/webapps</property>
+        <property name="MODULE_NAME">gs-mall-app</property>
+        <!-- 每种日志不同的输出文件 -->
+        <property name="ACCESS_LOG_FILE_NAME">access</property>
+        <property name="CALLBACK_LOG_FILE_NAME">callback</property>
+        <property name="APP_LOG_FILE_NAME">app</property>
+        <property name="THRID_FRAME_LOG_FILE_NAME">thrid-frame</property>
+        <property name="SQL_LOG_FILE_NAME">sql</property>
+        <property name="WARN_LOG_FILE_NAME">warn</property>
+        <property name="ERROR_LOG_FILE_NAME">error</property>
+        <property name="FATAL_LOG_FILE_NAME">fatal</property>
+        <property name="SOLR_LOG_FILE_NAME">solr</property>
+        <property name="ALL_LOG">all</property>
+    </properties>
+    <Appenders>
+        
+        <!-- 控制台 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %level [%t] %c(%F:%M:%L) - %m%n" />
+        </Console>
+        <RollingRandomAccessFile name="All"
+                                 fileName="${LOG_HOME}/${MODULE_NAME}/${ALL_LOG}.log"
+                                 filePattern="${LOG_HOME}/${MODULE_NAME}/${THRID_FRAME_LOG_FILE_NAME}-%d{yyyy-MM-dd}_%i.log">
+            <PatternLayout pattern="%d %level [%t] %c(%F:%M:%L) - %m%n" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="50"/>
+        </RollingRandomAccessFile>
+        <!-- 第三方框架 -->
+        <RollingRandomAccessFile name="ThridFrameLog"
+                                 fileName="${LOG_HOME}/${MODULE_NAME}/${THRID_FRAME_LOG_FILE_NAME}.log"
+                                 filePattern="${LOG_HOME}/${MODULE_NAME}/${THRID_FRAME_LOG_FILE_NAME}-%d{yyyy-MM-dd}_%i.log">
+            <PatternLayout pattern="%d %level [%t] %c(%F:%M:%L) - %m%n" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="50"/>
+        </RollingRandomAccessFile>
+        
+        <!-- 应用日志 -->
+        <RollingRandomAccessFile name="AppLog"
+                                 fileName="${LOG_HOME}/${MODULE_NAME}/${APP_LOG_FILE_NAME}.log"
+                                 filePattern="${LOG_HOME}/${MODULE_NAME}/${APP_LOG_FILE_NAME}-%d{yyyy-MM-dd}_%i.log">
+            <PatternLayout pattern="%d %level [%t] %c(%F:%M:%L) - %m%n" />
+            <Filters>
+                <!-- 只接受debug info 等 -->
+                <ThresholdFilter level="warn" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </Filters>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="50"/>
+        </RollingRandomAccessFile>
+
+        <!-- 数据库sql -->
+        <RollingRandomAccessFile name="SqlLog"
+                                 fileName="${LOG_HOME}/${MODULE_NAME}/${SQL_LOG_FILE_NAME}.log"
+                                 filePattern="${LOG_HOME}/${MODULE_NAME}/${SQL_LOG_FILE_NAME}-%d{yyyy-MM-dd}_%i.log">
+            <PatternLayout pattern="%d %level [%t] %c(%F:%M:%L) - %m%n" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingRandomAccessFile>
+
+        <!-- 访问 -->
+        <RollingRandomAccessFile name="AccessLog"
+                                 fileName="${LOG_HOME}/${MODULE_NAME}/${ACCESS_LOG_FILE_NAME}.log"
+                                 filePattern="${LOG_HOME}/${MODULE_NAME}/${ACCESS_LOG_FILE_NAME}-%d{yyyy-MM-dd}_%i.log">
+            <PatternLayout pattern="%d %level [%t] %c(%F:%M:%L) - %m%n" />
+            <Policies>
+                 <!-- 每个log最大的容量 -->
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <!-- DefaultRolloverStrategy 中的参数max，可以限制 SizeBasedTriggeringPolicy中size超出后，只保留max个存档-->
+            <DefaultRolloverStrategy max="50"/>
+        </RollingRandomAccessFile>
+
+        <!-- error -->
+        <RollingRandomAccessFile name="ErrorLog"
+                                 fileName="${LOG_HOME}/${MODULE_NAME}/${ERROR_LOG_FILE_NAME}.log"
+                                 filePattern="${LOG_HOME}/${MODULE_NAME}/${ERROR_LOG_FILE_NAME}-%d{yyyy-MM-dd}_%i.log"
+                                 immediateflush="true">
+            <PatternLayout pattern="%d %level [%t] %c(%F:%M:%L) - %m%n" />
+            <Filters>
+                <!-- 只接受error -->
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="50"/>
+        </RollingRandomAccessFile>
+        
+        <!-- fatal -->
+        <RollingRandomAccessFile name="FatalLog"
+                                 fileName="${LOG_HOME}/${MODULE_NAME}/${FATAL_LOG_FILE_NAME}.log"
+                                 filePattern="${LOG_HOME}/${MODULE_NAME}/${FATAL_LOG_FILE_NAME}-%d{yyyy-MM-dd}_%i.log"
+                                 immediateflush="true">
+            <PatternLayout pattern="%d %level [%t] %c(%F:%M:%L) - %m%n" />
+            <Filters>
+                <!-- 只接受FATAL -->
+                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="50"/>
+        </RollingRandomAccessFile>
+        <!-- solr -->
+        <RollingRandomAccessFile name="SolrLog"
+                                 fileName="${LOG_HOME}/${MODULE_NAME}/${SOLR_LOG_FILE_NAME}.log"
+                                 filePattern="${LOG_HOME}/${MODULE_NAME}/${SOLR_LOG_FILE_NAME}-%d{yyyy-MM-dd}_%i.log">
+            <PatternLayout pattern="%d %level [%t] %c(%F:%M:%L) - %m%n" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingRandomAccessFile>
+        <!-- callback -->
+        <RollingRandomAccessFile name="CallbackLog"
+                                 fileName="${LOG_HOME}/${MODULE_NAME}/${CALLBACK_LOG_FILE_NAME}.log"
+                                 filePattern="${LOG_HOME}/${MODULE_NAME}/${CALLBACK_LOG_FILE_NAME}-%d{yyyy-MM-dd}_%i.log">
+            <PatternLayout pattern="%d %level [%t] %c(%F:%M:%L) - %m%n" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingRandomAccessFile>
+        <!-- Warn -->
+        <RollingRandomAccessFile name="WarnLog"
+                                 fileName="${LOG_HOME}/${MODULE_NAME}/${WARN_LOG_FILE_NAME}.log"
+                                 filePattern="${LOG_HOME}/${MODULE_NAME}/${WARN_LOG_FILE_NAME}-%d{yyyy-MM-dd}_%i.log">
+            <PatternLayout pattern="%d %level [%t] %c(%F:%M:%L) - %m%n" />
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="warn"  onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="50"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- 
+                子logger会默认继承父logger的appender，将它们加入到自己的Appender中；
+                除非加上了additivity="false"，则不再继承父logger的appender。
+         -->
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <!-- <AppenderRef ref="all"/> -->
+        </Root>
+        <!-- 第三方框架 -->
+        <Logger level="info" name="org.springframework.core">
+            <AppenderRef ref="ThridFrameLog"/>
+        </Logger>
+        <Logger level="info" name="org.springframework.beans">
+            <AppenderRef ref="ThridFrameLog"/>
+        </Logger>
+        <Logger level="info" name="org.springframework.context">
+            <AppenderRef ref="ThridFrameLog"/>
+        </Logger>
+        <Logger level="info" name="org.springframework.web">
+            <AppenderRef ref="ThridFrameLog"/>
+        </Logger>
+        <Logger level="info" name="com.zaxxer.hikari">
+            <AppenderRef ref="ThridFrameLog"/>
+        </Logger>
+        <Logger level="info" name="com.zaxxer.hikari.pool">
+            <AppenderRef ref="ThridFrameLog"/>
+        </Logger>
+        <!-- app -->
+        <Logger name="app" level="info" additivity="true">
+            <AppenderRef ref="AppLog"/>
+            <AppenderRef ref="WarnLog"/>
+            <AppenderRef ref="ErrorLog"/>
+        </Logger>
+        <!-- sql -->
+        <Logger name="sql" level="debug" additivity="true">
+            <AppenderRef ref="SqlLog"/>
+            <AppenderRef ref="WarnLog"/>
+            <AppenderRef ref="ErrorLog"/>
+        </Logger>
+        <!-- 项目访问日志 -->
+        <Logger name="access" level="debug" additivity="true">
+            <AppenderRef ref="AccessLog"/>
+            <AppenderRef ref="WarnLog"/>
+            <AppenderRef ref="ErrorLog"/>
+        </Logger>
+        <!-- 致命错误 -->
+        <Logger name="fatal" level="error" additivity="true">
+            <AppenderRef ref="FatalLog"/>
+        </Logger>
+        <Logger name="solr" level="info" additivity="true">
+            <AppenderRef ref="SolrLog"/>
+            <AppenderRef ref="WarnLog"/>
+            <AppenderRef ref="ErrorLog"/>
+        </Logger>
+        <Logger name="callback" level="info" additivity="true">
+            <AppenderRef ref="CallbackLog"/>
+            <AppenderRef ref="WarnLog"/>
+            <AppenderRef ref="ErrorLog"/>
+        </Logger>
+    </Loggers>
+</Configuration>

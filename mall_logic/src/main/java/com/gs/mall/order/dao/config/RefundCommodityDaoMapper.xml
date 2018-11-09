@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.order.dao.RefundCommodityDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.order.po.RefundCommodity">
+			<id column="rc_id" jdbcType="BIGINT" property="rcId" />
+			<result column="wo_id" jdbcType="CHAR" property="woId" />
+			<result column="snapshoot_id" jdbcType="BIGINT" property="snapshootId" />
+			<result column="commodity_id" jdbcType="BIGINT" property="commodityId" />
+			<result column="sku_id" jdbcType="VARCHAR" property="skuId" />
+			<result column="title" jdbcType="VARCHAR" property="title" />
+			<result column="attributes" jdbcType="VARCHAR" property="attributes" />
+			<result column="price" jdbcType="INTEGER" property="price" />
+			<result column="num" jdbcType="INTEGER" property="num" />
+			<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+			<result column="img_uri" jdbcType="VARCHAR" property="imgUri" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		rc_id
+		,wo_id
+		,snapshoot_id
+		,commodity_id
+		,sku_id
+		,title
+		,attributes
+		,price
+		,num
+		,create_time
+		,img_uri
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_refund_commodity 
+    where rc_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.order.po.RefundCommodity" useGeneratedKeys="true" keyColumn="rc_id" keyProperty="rcId">
+    insert into gs_refund_commodity(
+				wo_id
+				,snapshoot_id
+				,commodity_id
+				,sku_id
+				,title
+				,attributes
+				,price
+				,num
+				,create_time
+				,img_uri
+	)
+	values(
+			#{woId,jdbcType=CHAR}
+			,#{snapshootId,jdbcType=BIGINT}
+			,#{commodityId,jdbcType=BIGINT}
+			,#{skuId,jdbcType=VARCHAR}
+			,#{title,jdbcType=VARCHAR}
+			,#{attributes,jdbcType=VARCHAR}
+			,#{price,jdbcType=INTEGER}
+			,#{num,jdbcType=INTEGER}
+			,#{createTime,jdbcType=TIMESTAMP}
+			,#{imgUri,jdbcType=VARCHAR}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.order.po.RefundCommodity">
+    update gs_refund_commodity 
+    <set>
+			 <if test="woId != null">
+				wo_id = #{woId,jdbcType=CHAR},
+			 </if>
+			 <if test="snapshootId != null">
+				snapshoot_id = #{snapshootId,jdbcType=BIGINT},
+			 </if>
+			 <if test="commodityId != null">
+				commodity_id = #{commodityId,jdbcType=BIGINT},
+			 </if>
+			 <if test="skuId != null">
+				sku_id = #{skuId,jdbcType=VARCHAR},
+			 </if>
+			 <if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
+			 </if>
+			 <if test="attributes != null">
+				attributes = #{attributes,jdbcType=VARCHAR},
+			 </if>
+			 <if test="price != null">
+				price = #{price,jdbcType=INTEGER},
+			 </if>
+			 <if test="num != null">
+				num = #{num,jdbcType=INTEGER},
+			 </if>
+			 <if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			 </if>
+			 <if test="imgUri != null">
+				img_uri = #{imgUri,jdbcType=VARCHAR},
+			 </if>
+	</set>
+    where rc_id = #{rcId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from gs_refund_commodity where rc_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_refund_commodity <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_refund_commodity <include refid="select_query_sql"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.woId != null">
+				and wo_id = #{params.woId}
+			 </if>
+			 <if test="params.snapshootId != null">
+				and snapshoot_id = #{params.snapshootId}
+			 </if>
+			 <if test="params.commodityId != null">
+				and commodity_id = #{params.commodityId}
+			 </if>
+			 <if test="params.skuId != null">
+				and sku_id = #{params.skuId}
+			 </if>
+			 <if test="params.title != null">
+				and title = #{params.title}
+			 </if>
+			 <if test="params.attributes != null">
+				and attributes = #{params.attributes}
+			 </if>
+			 <if test="params.price != null">
+				and price = #{params.price}
+			 </if>
+			 <if test="params.num != null">
+				and num = #{params.num}
+			 </if>
+			 <if test="params.createTime != null">
+				and create_time = #{params.createTime}
+			 </if>
+			 <if test="params.imgUri != null">
+				and img_uri = #{params.imgUri}
+			 </if>
+	</where>
+  </sql>
+
+
+	<select id="queryByWorkOrderId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+		select <include refid="Base_Column_List"/> from gs_refund_commodity where  wo_id = #{woId}
+	</select>
+
+</mapper>

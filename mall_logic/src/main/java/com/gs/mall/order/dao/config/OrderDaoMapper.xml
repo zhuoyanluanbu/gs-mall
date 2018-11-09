@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.order.dao.OrderDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.order.po.Order">
+			<id column="order_id" jdbcType="CHAR" property="orderId" />
+			<result column="user_addr_id" jdbcType="BIGINT" property="userAddrId" />
+			<result column="logistics_id" jdbcType="BIGINT" property="logisticsId" />
+			<result column="merchant_id" jdbcType="BIGINT" property="merchantId" />
+			<result column="owner_open_id" jdbcType="CHAR" property="ownerOpenId" />
+			<result column="commodity_num" jdbcType="SMALLINT" property="commodityNum" />
+			<result column="commodity_type" jdbcType="SMALLINT" property="commodityType" />
+			<result column="total_price" jdbcType="INTEGER" property="totalPrice" />
+			<result column="pay_price" jdbcType="INTEGER" property="payPrice" />
+			<result column="freight_price" jdbcType="INTEGER" property="freightPrice" />
+			<result column="discount_price" jdbcType="INTEGER" property="discountPrice" />
+			<result column="discount_code" jdbcType="VARCHAR" property="discountCode" />
+			<result column="discount_name" jdbcType="VARCHAR" property="discountName" />
+			<result column="status" jdbcType="INTEGER" property="status" />
+			<result column="pay_status" jdbcType="SMALLINT" property="payStatus" />
+			<result column="refund_detail" jdbcType="VARCHAR" property="refundDetail" />
+			<result column="refund_status" jdbcType="INTEGER" property="refundStatus" />
+			<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+			<result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+			<result column="deliver_time" jdbcType="TIMESTAMP" property="deliverTime" />
+			<result column="finish_time" jdbcType="TIMESTAMP" property="finishTime" />
+  </resultMap>
+
+
+	<resultMap id="OrderDTOResultMap" type="com.gs.mall.order.dto.OrderDto">
+		<id column="order_id" property="orderId"/>
+		<result column="commodity_num" property="commodityNum" />
+		<result column="commodity_type" property="commodityType" />
+		<result column="total_price" property="totalPrice" />
+		<result column="freight_price" property="freightPrice" />
+		<result column="discount_price" property="discountPrice" />
+		<result column="status" property="status" />
+		<result column="create_time" property="createTime" />
+		<result column="pay_time" property="payTime" />
+		<result column="deliver_time" property="deliverTime" />
+
+		<result column="pay_status" jdbcType="SMALLINT" property="payStatus" />
+
+		<result column="refund_status" jdbcType="INTEGER" property="refundStatus" />
+		<result column="refund_detail" jdbcType="VARCHAR" property="refundDetail" />
+		<!-- 查询用户信息 -->
+		<association property="userInfo" column="user_addr_id" select="selectUserInfo"/>
+		<!-- 查询物流信息 -->
+		<association property="logistics" column="logistics_id" select="selectLogistics"/>
+		<!-- 查询商品信息 -->
+		<collection property="commodities" column="order_id" select="selectCommodities"/>
+	</resultMap>
+
+
+	<sql id="Base_Column_List">
+		order_id
+		,user_addr_id
+		,logistics_id
+		,merchant_id
+		,owner_open_id
+		,commodity_num
+		,commodity_type
+		,total_price
+		,pay_price
+		,freight_price
+		,discount_price
+		,discount_code
+		,discount_name
+		,status
+		,pay_status
+		,refund_detail
+		,refund_status
+		,create_time
+		,pay_time
+		,deliver_time
+		,finish_time
+  </sql>
+
+
+	<sql id="OrderDto_Column_List">
+		order_id, user_addr_id, logistics_id, commodity_num,pay_status,refund_status,refund_detail,
+		total_price, freight_price, discount_price, status, create_time, pay_time,deliver_time
+	</sql>
+
+
+	<select id="selectById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_order 
+    where order_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.order.po.Order">
+    insert into gs_order( <include refid="Base_Column_List"/> )
+    values(
+			#{orderId,jdbcType=CHAR}
+			,#{userAddrId,jdbcType=BIGINT}
+			,#{logisticsId,jdbcType=BIGINT}
+			,#{merchantId,jdbcType=BIGINT}
+			,#{ownerOpenId,jdbcType=CHAR}
+			,#{commodityNum,jdbcType=SMALLINT}
+			,#{commodityType,jdbcType=SMALLINT}
+			,#{totalPrice,jdbcType=INTEGER}
+			,#{payPrice,jdbcType=INTEGER}
+			,#{freightPrice,jdbcType=INTEGER}
+			,#{discountPrice,jdbcType=INTEGER}
+			,#{discountCode,jdbcType=VARCHAR}
+			,#{discountName,jdbcType=VARCHAR}
+			,#{status,jdbcType=INTEGER}
+			,#{payStatus,jdbcType=SMALLINT}
+			,#{refundDetail,jdbcType=VARCHAR}
+			,#{refundStatus,jdbcType=INTEGER}
+			,#{createTime,jdbcType=TIMESTAMP}
+			,#{payTime,jdbcType=TIMESTAMP}
+			,#{deliverTime,jdbcType=TIMESTAMP}
+			,#{finishTime,jdbcType=TIMESTAMP}
+	)
+  </insert>	
+
+  <update id="update" parameterType="com.gs.mall.order.po.Order">
+    update gs_order 
+    <set>
+			 <if test="userAddrId != null">
+				user_addr_id = #{userAddrId,jdbcType=BIGINT},
+			 </if>
+			 <if test="logisticsId != null">
+				logistics_id = #{logisticsId,jdbcType=BIGINT},
+			 </if>
+			 <if test="merchantId != null">
+				merchant_id = #{merchantId,jdbcType=BIGINT},
+			 </if>
+			 <if test="ownerOpenId != null">
+				owner_open_id = #{ownerOpenId,jdbcType=CHAR},
+			 </if>
+			 <if test="commodityNum != null">
+				commodity_num = #{commodityNum,jdbcType=SMALLINT},
+			 </if>
+			 <if test="commodityType != null">
+				commodity_type = #{commodityType,jdbcType=SMALLINT},
+			 </if>
+			 <if test="totalPrice != null">
+				total_price = #{totalPrice,jdbcType=INTEGER},
+			 </if>
+			 <if test="payPrice != null">
+				pay_price = #{payPrice,jdbcType=INTEGER},
+			 </if>
+			 <if test="freightPrice != null">
+				freight_price = #{freightPrice,jdbcType=INTEGER},
+			 </if>
+			 <if test="discountPrice != null">
+				discount_price = #{discountPrice,jdbcType=INTEGER},
+			 </if>
+			 <if test="discountCode != null">
+				discount_code = #{discountCode,jdbcType=VARCHAR},
+			 </if>
+			 <if test="discountName != null">
+				discount_name = #{discountName,jdbcType=VARCHAR},
+			 </if>
+			 <if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			 </if>
+			 <if test="payStatus != null">
+				pay_status = #{payStatus,jdbcType=SMALLINT},
+			 </if>
+			 <if test="refundDetail != null">
+				refund_detail = #{refundDetail,jdbcType=VARCHAR},
+			 </if>
+			 <if test="refundStatus != null">
+				refund_status = #{refundStatus,jdbcType=INTEGER},
+			 </if>
+			 <if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			 </if>
+			 <if test="payTime != null">
+				pay_time = #{payTime,jdbcType=TIMESTAMP},
+			 </if>
+			 <if test="deliverTime != null">
+				deliver_time = #{deliverTime,jdbcType=TIMESTAMP},
+			 </if>
+			 <if test="finishTime != null">
+				finish_time = #{finishTime,jdbcType=TIMESTAMP},
+			 </if>
+	</set>
+    where order_id = #{orderId}
+  </update>
+
+	<update id="updateStatus" >
+		  update gs_order set `status` = #{newStatus}
+		  <if test="finishTime != null">
+			,finish_time = #{finishTime}
+		  </if>
+		   where order_id = #{orderId} and `status` = #{oldStatus}
+ 	</update>
+
+  <delete id="deleteById" parameterType="java.lang.String">
+    delete from gs_order where order_id = #{id}
+  </delete>
+
+	<select id="countConsume"  resultType="int">
+		SELECT IFNULL(SUM(pay_price), 0) items FROM gs_order WHERE status IN (1100,1200,1300) AND pay_status &lt;&gt; 2 AND pay_time BETWEEN #{startTime} AND #{endTime}
+	</select>
+
+	<select id="selectByParam" resultMap="OrderDTOResultMap">
+		select o.* from gs_order o <include refid="commentWhere"/>
+		order by o.create_time desc
+		limit #{startIndex},#{fetchSize}
+	</select>
+
+	<select id="selectCountByParam" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+		select count(*) items from gs_order o <include refid="commentWhere"/>
+	</select>
+
+	<sql id="commentWhere">
+		<where>
+			<if test="params.merchantId != null and params.merchantId != ''">
+				o.merchant_id = #{params.merchantId}
+			</if>
+			<if test="params.orderId != null and params.orderId != ''">
+				and o.`order_id` = #{params.orderId}
+			</if>
+			<if test="params.ownerOpenId != null and params.ownerOpenId != ''">
+				and o.`owner_open_id` = #{params.ownerOpenId}
+			</if>
+			<if test="params.status != null and params.status != '' and params.status !=1100">
+				and o.`status` = #{params.status}
+			</if>
+			<if test="params.status != null and params.status != '' and params.status ==1100">
+				and o.`status` = #{params.status}
+				and o.refund_status = 0
+			</if>
+			<if test="params.statusArray != null ">
+				and o.`status` in <foreach collection="params.statusArray" open="(" separator="," close=")" item="sts">
+				#{sts}
+			</foreach>
+			</if>
+			<if test="params.appPayStatus != null">
+				<if test="params.appPayStatus == 1">
+					and o.pay_status BETWEEN 1 and 2
+				</if>
+				<if test="params.appPayStatus != 1 and params.appPayStatus != ''">
+					and o.pay_status = #{params.appPayStatus}
+				</if>
+			</if>
+			<if test="params.beginCreateDate != null">
+				and o.create_time &gt;= #{params.beginCreateDate}
+			</if>
+			<if test="params.endCreateDate != null">
+				and o.create_time &lt;= #{params.endCreateDate}
+			</if>
+			<if test="(params.buyerName != null and params.buyerName != '') or (params.buyerPhone != null and params.buyerPhone != '')">
+				and EXISTS ( SELECT ua.user_addr_id FROM gs_user_address ua WHERE ua.user_addr_id = o.user_addr_id
+				<if test="params.buyerName != null and params.buyerName != ''">
+					AND ua.username = #{params.buyerName}
+				</if>
+				<if test="params.buyerPhone != null and params.buyerPhone != ''">
+					AND ua.mobile = #{params.buyerPhone}
+				</if>
+				)
+			</if>
+		</where>
+	</sql>
+
+	<!-- selectUserInfo selectLogistics selectCommodities -->
+	<select id="selectUserInfo" parameterType="java.lang.Long" resultType="java.util.HashMap">
+		select username userName,mobile,province,city,area,address
+		from gs_user_address where user_addr_id = #{user_addr_id}
+	</select>
+
+	<select id="selectLogistics" parameterType="java.lang.Long" resultType="java.util.HashMap">
+		select logistics_id logisticsId,`name`,`code`,simple_name simpleName
+		from gs_logistics where logistics_id = #{logistics_id}
+	</select>
+
+	<select id="selectCommodities" parameterType="java.lang.String" resultType="java.util.HashMap">
+		select t1.snapshoot_id snapshootId,t1.title,t1.attributes skuName,t1.price,t1.num,t1.bar_code barCode,t1.img_uri imgUri,t1.status,
+		t1.commodity_id commodityId,t1.sku_id skuId,t3.type commodityType,IF(t2.comment_id,1,0) isCommented
+		from gs_commodity_snapshoot t1
+		LEFT JOIN gs_commodity t3 ON t1.commodity_id=t3.id
+		LEFT JOIN gs_comment  t2 on t1.snapshoot_id=t2.snapshoot_id and t2.score !=-1
+		where order_id = #{order_id}
+	</select>
+
+	<select id="queryOrderTimeByStatus" resultType="java.util.HashMap">
+		select order_id orderId,create_time createTime,pay_time payTime,deliver_time deliverTime,finish_time finishTime
+		from gs_order where `status` = #{status} limit #{startIndex},#{fetchSize}
+	</select>
+
+	<insert id="inertOrderPayData" parameterType="com.gs.mall.order.po.OrderPayData" useGeneratedKeys="true" keyColumn="op_id">
+		insert into gs_order_paydata(order_id,trade_no,pay_data) values(#{orderId},#{tradeNo},#{payData})
+	</insert>
+
+	<select id="queryPayDataByOrderId" parameterType="java.lang.String" resultType="com.gs.mall.order.po.OrderPayData">
+		select op_id opId,order_id orderId,trade_no tradeNo,pay_data payData from gs_order_paydata where order_id = #{orderId}
+	</select>
+
+	<select id="queryOrderDtoByOrderId"  resultMap="OrderDTOResultMap">
+		select <include refid="OrderDto_Column_List"/> from gs_order where order_id = #{orderId} and owner_open_id = #{openId}
+	</select>
+
+</mapper>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gs.mall.commodity.dao.CommodityExtendDao">
+		
+  <resultMap id="BaseResultMap" type="com.gs.mall.commodity.po.CommodityExtend">
+			<id column="extend_id" jdbcType="BIGINT" property="extendId" />
+			<result column="commodity_id" jdbcType="BIGINT" property="commodityId" />
+			<result column="type" jdbcType="SMALLINT" property="type" />
+			<result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap> 
+  
+
+  <sql id="Base_Column_List">
+		extend_id
+		,commodity_id
+		,type
+		,content
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" /> 
+    from gs_commodity_extend 
+    where extend_id = #{id}
+  </select>
+	
+  <insert id="insert" parameterType="com.gs.mall.commodity.po.CommodityExtend" useGeneratedKeys="true" keyColumn="extend_id" keyProperty="extendId">
+    insert into gs_commodity_extend(
+				commodity_id
+				,type
+				,content
+	)
+	values(
+			#{commodityId,jdbcType=BIGINT}
+			,#{type,jdbcType=SMALLINT}
+			,#{content,jdbcType=LONGVARCHAR}
+	)	
+  </insert>
+
+  <update id="update" parameterType="com.gs.mall.commodity.po.CommodityExtend">
+    update gs_commodity_extend 
+    <set>
+			 <if test="commodityId != null">
+				commodity_id = #{commodityId,jdbcType=BIGINT},
+			 </if>
+			 <if test="type != null">
+				type = #{type,jdbcType=SMALLINT},
+			 </if>
+			 <if test="content != null">
+				content = #{content,jdbcType=LONGVARCHAR},
+			 </if>
+	</set>
+    where extend_id = #{extendId}
+  </update>
+
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from gs_commodity_extend where extend_id = #{id}
+  </delete>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"/> from gs_commodity_extend <include refid="select_query_sql"/> limit  #{startIndex}, #{fetchSize}
+  </select>
+  
+  <select id="selectCountByParam" parameterType="java.util.Map" resultType="java.lang.Integer">
+		 select count(*) items from gs_commodity_extend <include refid="select_query_sql"/> 
+  </select>
+  
+  <sql id="select_query_sql">
+	<where>
+			 <if test="params.commodityId != null">
+				and commodity_id = #{params.commodityId}
+			 </if>
+			 <if test="params.type != null">
+				and type = #{params.type}
+			 </if>
+			 <if test="params.content != null">
+				and content = #{params.content}
+			 </if>
+	</where>
+  </sql>
+
+	<select id="queryByCommodityId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from gs_commodity_extend
+		where commodity_id = #{commodityId,jdbcType=BIGINT}
+	</select>
+
+
+	<update id="updateExtend" >
+		update gs_commodity_extend
+		set content = #{content,jdbcType=LONGVARCHAR}
+		where commodity_id = #{commodityId,jdbcType=BIGINT}
+	</update>
+
+</mapper>
