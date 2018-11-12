@@ -2,7 +2,9 @@ package com.gs.mall.order.po;
 
 import com.gs.mall.common.po.MyObject;
 
+import java.io.File;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -27,24 +29,14 @@ public class WorkOrderFlowRec extends MyObject {
     private int status;//0未处理 1同意 2拒绝
     private String reason;//如果未通过，这里是原因；通过也可以编写原因
     private String remark;
+    private String desc;//描述
 
-    public WorkOrderFlowRec() {
+    public String getDesc() {
+        return desc;
     }
 
-    public WorkOrderFlowRec(int id, String wo_id, String operator_id, String operator, String operation, Date operation_time, int operation_from, String logistics, String pre_operation, String next_operation, int status, String reason, String remark) {
-        this.id = id;
-        this.wo_id = wo_id;
-        this.operator_id = operator_id;
-        this.operator = operator;
-        this.operation = operation;
-        this.operation_time = operation_time;
-        this.operation_from = operation_from;
-        this.logistics = logistics;
-        this.pre_operation = pre_operation;
-        this.next_operation = next_operation;
-        this.status = status;
-        this.reason = reason;
-        this.remark = remark;
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
     public int getId() {
@@ -150,4 +142,24 @@ public class WorkOrderFlowRec extends MyObject {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
+    public WorkOrderFlowRec() {
+    }
+
+    public WorkOrderFlowRec(int id, String wo_id, String operator_id, String operator, String operation, Date operation_time, int operation_from, String logistics, String pre_operation, String next_operation, int status, String reason, String remark) {
+        this.id = id;
+        this.wo_id = wo_id;
+        this.operator_id = operator_id;
+        this.operator = operator;
+        this.operation = operation;
+        this.operation_time = operation_time;
+        this.operation_from = operation_from;
+        this.logistics = logistics;
+        this.pre_operation = pre_operation;
+        this.next_operation = next_operation;
+        this.status = status;
+        this.reason = reason;
+        this.remark = remark;
+    }
+
 }

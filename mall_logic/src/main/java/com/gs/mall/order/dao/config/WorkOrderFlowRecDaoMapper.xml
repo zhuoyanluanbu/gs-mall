@@ -122,11 +122,39 @@
     </select>
 
     <select id="currentWorkOrderByWoId" parameterType="String" resultMap="WorkOrderFlowRec">
-        SELECT * from <include refid="table_name" /> WHERE wo_id=#{wo_id} ORDER BY operation_time DESC limit 0,1
+        SELECT * from <include refid="table_name" /> WHERE wo_id=#{wo_id} ORDER BY id DESC limit 0,1
     </select>
 
     <select id="selectByParam" resultMap="WorkOrderFlowRec">
         SELECT * FROM <include refid="table_name" /> <include refid="select_query_sql" /> limit #{startIndex}, #{fetchSize}
     </select>
+
+
+    <resultMap id="WorkOrderTableDisplay" type="com.gs.mall.order.po.WorkOrderTableDisplay">
+        <result column="wo_id" property="wo_id" />
+        <result column="order_id" property="order_id" />
+        <result column="status" property="status" />
+        <result column="timeFormat" property="timeFormat" />
+        <result column="refundAmount" property="refundAmount" />
+        <result column="refundPoints" property="refundPoints" />
+        <result column="refundApplicationInstruction" property="refundApplicationInstruction" />
+        <result column="fromApplicationPerson" property="fromApplicationPerson" />
+        <result column="operatedPerson" property="operatedPerson" />
+    </resultMap>
+    <select id="dis">
+        SELECT e.wo_id,e.operator,e.operator_id,e.operation,e.operation_time,
+        e.from_operator,e.from_operator_id,e.reason,e.order_id,f.price,f.points
+         from
+        (SELECT c.wo_id,c.operator,c.operator_id,c.operation,c.operation_time,c.from_operator,c.from_operator_id,c.reason,d.order_id from
+          ((SELECT a.wo_id,a.operator,a.operator_id,a.operation,a.operation_time,a.from_operator,a.from_operator_id,a.reason from gs_work_order_flow_rec a right JOIN
+            (SELECT * from gs_work_order_flow WHERE own LIKE '%CW%') b
+              on a.operation=b.operation
+            where a.wo_id='R_wo_id')) c
+          left join gs_work_order_new d
+          on c.wo_id=d.wo_id) e
+        left join gs_refund_commodity f
+        on e.wo_id=f.wo_id
+    </select>
+
 
 </mapper>

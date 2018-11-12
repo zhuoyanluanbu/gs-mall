@@ -61,7 +61,7 @@ public class WorkOrderV2Exception extends Exception {
 
 
     public enum Item{
-        WorkOrderFinished(40001,"当前工单已经完成"),
+        WorkOrderClosed(40001,"当前工单已关闭"),
         OperatorNull(40002,"请填写操作者id或者操作者"),
         LogisticsError(400003,"物流信息错误");
 

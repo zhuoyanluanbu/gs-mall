@@ -21,6 +21,7 @@ public class WorkOrderFlow extends MyObject implements Comparator<WorkOrderFlow>
     public static final String ReceivedMail = "ReceivedMail";//收到快递
     public static final String FinanceView = "FinanceView";//财务审核
     public static final String Finish = "Finish";//完成
+    public static final String Close = "Close";//关闭工单
 
     private int id = -1;
     private String operation;//操作名，常量定死

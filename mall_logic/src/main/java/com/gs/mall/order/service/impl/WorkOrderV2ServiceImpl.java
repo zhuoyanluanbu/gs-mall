@@ -110,14 +110,15 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
     }
 
     /*
-    * 当前工单是否已经完成
+    * 当前工单是否已经关闭
     * */
-    public boolean workOrderIsFinished(String order_idOrWo_id){
-        if (this.currentWorkOrderByOrderIdOrWoId(order_idOrWo_id).getOperation().equals(WorkOrderFlow.Finish)) return true;
+    public boolean workOrderIsClosed(String order_idOrWo_id){
+        if (this.currentWorkOrderByOrderIdOrWoId(order_idOrWo_id).getOperation().equalsIgnoreCase(WorkOrderFlow.Close))
+            return true;
         return false;
     }
-    public boolean workOrderIsFinished(WorkOrderFlowRec workOrderFlowRec){
-        if (workOrderFlowRec.getOperation().equals(WorkOrderFlow.Finish)) return true;
+    public boolean workOrderIsClosed(WorkOrderFlowRec workOrderFlowRec){
+        if (workOrderFlowRec.getOperation().equals(WorkOrderFlow.Close)) return true;
         return false;
     }
 
@@ -130,8 +131,8 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
         //当前正在进行的操作
         WorkOrderFlowRec currentWorkOrderFlowRec = this.currentWorkOrderByOrderIdOrWoId(clientCurFlowRec.getWo_id());
 
-        if(this.workOrderIsFinished(currentWorkOrderFlowRec))
-            throw new WorkOrderV2Exception(WorkOrderV2Exception.Item.WorkOrderFinished);
+        if(this.workOrderIsClosed(currentWorkOrderFlowRec))
+            throw new WorkOrderV2Exception(WorkOrderV2Exception.Item.WorkOrderClosed);
 
         if (!StringUtil.isNotEmpty(clientCurFlowRec.getOperator_id()) || !StringUtil.isNotEmpty(clientCurFlowRec.getOperator())) {
             //这里必须填写操作者
@@ -173,12 +174,12 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
             return nextWorkOrderFlowRec;
         } else if (current.getStatus() == WorkOrderFlowRec.NotPass) {
             if (!this.getAllWorkOrderFlowsMap().get(current.getOperation())
-                    .getOwn().contains(WorkOrderFlow.WorkOrderFlowOwner.Finance)) {//如果当前步骤没有财务参与,客服不通过，直接完成工单
-                WorkOrderFlowRec finishWorkOrderFlowRec = this.insertFlowRec(new WorkOrderFlowRec(0, current.getWo_id(),
+                    .getOwn().contains(WorkOrderFlow.WorkOrderFlowOwner.Finance)) {//如果当前步骤没有财务参与,客服不通过，直接关闭工单
+                WorkOrderFlowRec closeWorkOrderFlowRec = this.insertFlowRec(new WorkOrderFlowRec(0, current.getWo_id(),
                         current.getOperator_id(), current.getOperator(),
-                        "Finish", new Date(), 1, null, current.getOperation(),
-                        null, 1, null, "工单完成"));
-                return finishWorkOrderFlowRec;
+                        WorkOrderFlow.Close, new Date(), 1, null, current.getOperation(),
+                        null, 1, current.getReason(), current.getRemark()));
+                return closeWorkOrderFlowRec;
             } else {
                 //回到上一步骤
                 WorkOrderFlowRec rollBackWorkOrderFlowRec = this.insertFlowRec(new WorkOrderFlowRec(0, current.getWo_id(),
