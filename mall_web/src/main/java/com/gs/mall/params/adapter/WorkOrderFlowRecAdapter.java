@@ -63,25 +63,24 @@ public class WorkOrderFlowRecAdapter implements ExcelFileAdapter {
             colIndex =0;
             cells = new ArrayList<>(7);
             //状态
-            cells.add(new ExcelCell(colIndex++, sdf.format(tradDetail.getCreateTime()), ExcelStyleFactory.defStyle()));
-            //申请时间
-            cells.add(new ExcelCell(colIndex++, null, ExcelStyleFactory.defStyle()));
-            //商品订单编号
-            cells.add(new ExcelCell(colIndex++, null, ExcelStyleFactory.defStyle()));
-            //退款金额
-            cells.add(new ExcelCell(colIndex++, null, ExcelStyleFactory.defStyle()));
-            //退款申请说明
-            cells.add(new ExcelCell(colIndex++, null, ExcelStyleFactory.defStyle()));
-            //申请发起人
-            cells.add(new ExcelCell(colIndex++, null, ExcelStyleFactory.defStyle()));
-            //操作人
-            cells.add(new ExcelCell(colIndex++,null,ExcelStyleFactory.defStyle()));
+//            cells.add(new ExcelCell(colIndex++, sdf.format(tradDetail.getCreateTime()), ExcelStyleFactory.defStyle()));
+//            //申请时间
+//            cells.add(new ExcelCell(colIndex++, null, ExcelStyleFactory.defStyle()));
+//            //商品订单编号
+//            cells.add(new ExcelCell(colIndex++, null, ExcelStyleFactory.defStyle()));
+//            //退款金额
+//            cells.add(new ExcelCell(colIndex++, null, ExcelStyleFactory.defStyle()));
+//            //退款申请说明
+//            cells.add(new ExcelCell(colIndex++, null, ExcelStyleFactory.defStyle()));
+//            //申请发起人
+//            cells.add(new ExcelCell(colIndex++, null, ExcelStyleFactory.defStyle()));
+//            //操作人
+//            cells.add(new ExcelCell(colIndex++,null,ExcelStyleFactory.defStyle()));
             row.setCells(cells);
             rows.add(row);
         }
         exportData.setRows(rows);
         exportFile.setData(exportData);
         return exportFile;
-        return null;
     }
 }

@@ -2,6 +2,7 @@ package com.gs.mall.order.controller;
 
 import com.gs.common.result.ResponseResult;
 import com.gs.mall.common.util.StringUtil;
+import com.gs.mall.order.dto.WorkOrderTableDisplayDto;
 import com.gs.mall.order.po.*;
 import com.gs.mall.order.service.WorkOrderV2Service;
 import com.gs.mall.order.service.impl.WorkOrderV2Exception;
@@ -64,7 +65,7 @@ public class WorkOrderV2Controller {
     public ResponseResult currentWorkOrderFlowPassOrNot(@PathVariable("passOrNot") int passOrNot,@RequestBody WorkOrderFlowRec clientWorkOrderFlowRec){
         //1通过 2驳回
         clientWorkOrderFlowRec.setStatus(passOrNot);
-        clientWorkOrderFlowRec.setOperation_from(1);//后台操作设置成1;
+//        clientWorkOrderFlowRec.setOperation_from(1);//后台操作设置成1;
         try {
             return ResponseResult.successInstance().setData(workOrderV2Service.confirmOrRollBackCurrentFlowAndCreateNextFlow(clientWorkOrderFlowRec));
         }catch (WorkOrderV2Exception e){
@@ -94,8 +95,36 @@ public class WorkOrderV2Controller {
         return ResponseResult.successInstance().setData(workOrderFlows);
     }
 
+
     /*
-    * 后台查看描述
+    * 工单搜索
+    * @param
+    * @return
+    * */
+    @RequestMapping(value = "/workOrderFlowRecs/search",method = RequestMethod.POST)
+    public ResponseResult wordOrderFlowsDescription(@RequestBody WorkOrderTableDisplayDto workOrderTableDisplayDto){
+        List<WorkOrderTableDisplayData> workOrderTableDisplayDatas = workOrderV2Service.getWorkOrderTableDisplayData(workOrderTableDisplayDto);
+        return ResponseResult.successInstance().setData(workOrderTableDisplayDatas);
+    }
+
+
+    /*
+    * 后台查看工单当前步骤
+    * @param orderIdOrWoId
+    * @return
+    * */
+    @RequestMapping(value = "/workOrderFlowRecs/description/current/{orderIdOrWoId}",method = RequestMethod.GET)
+    public ResponseResult currentWordOrderFlowDescription(@PathVariable("orderIdOrWoId") String orderIdOrWoId){
+        List<WorkOrderFlowRec> workOrderFlowRecList = workOrderV2Service.allExistWorkOrderFlowRec(orderIdOrWoId);
+        List<WorkOrderFlowRecDescription> wo_descriptions = new ArrayList<>();
+        for (WorkOrderFlowRec wofr:workOrderFlowRecList){
+            wo_descriptions.add(WorkOrderFlowRecDescription.instanceForManager(wofr));
+        }
+        return ResponseResult.successInstance().setData(wo_descriptions.get(wo_descriptions.size()-1));
+    }
+
+    /*
+    * 后台查看工单所有流程描述
     * @param orderIdOrWoId
     * @return
     * */

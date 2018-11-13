@@ -2,6 +2,7 @@ package com.gs.mall.order.po;
 
 import com.gs.mall.common.po.MyObject;
 
+
 /**
  * @author:huangyp
  * @version:1.0

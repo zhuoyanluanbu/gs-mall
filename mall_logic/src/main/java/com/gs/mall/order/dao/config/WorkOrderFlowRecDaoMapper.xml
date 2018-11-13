@@ -15,16 +15,19 @@
         <result column="status" property="status" />
         <result column="reason" property="reason" />
         <result column="remark" property="remark" />
+        <result column="from_operator" property="from_operator" />
+        <result column="from_operator_id" property="from_operator_id" />
+        <result column="create_time" property="create_time" />
     </resultMap>
     <sql id="Base_Column_List">
         id,wo_id,operator_id,operator,operation,operation_time,operation_from,logistics,pre_operation,
-        next_operation,status,reason,remark
+        next_operation,status,reason,remark,from_operator,from_operator_id,create_time
     </sql>
     <sql id="table_name">gs_work_order_flow_rec</sql>
     <sql id="select_query_sql">
         <where>
             <if test="params.wo_id != null">
-                and wo_id = #{params.wo_id}
+                wo_id = #{params.wo_id}
             </if>
             <if test="params.operator_id != null">
                 and operator_id = #{params.operator_id}
@@ -70,7 +73,8 @@
             keyProperty="id">
         INSERT INTO <include refid="table_name" />(<include refid="Base_Column_List"/>)
         VALUES(0,#{wo_id},#{operator_id},#{operator},#{operation},#{operation_time},#{operation_from},#{logistics},
-        #{pre_operation}, #{next_operation}, #{status},#{reason},#{remark})
+        #{pre_operation}, #{next_operation}, #{status},#{reason},#{remark},#{from_operator},#{from_operator_id},
+        #{create_time})
         <selectKey resultType="int" keyProperty="id" order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
@@ -130,30 +134,50 @@
     </select>
 
 
-    <resultMap id="WorkOrderTableDisplay" type="com.gs.mall.order.po.WorkOrderTableDisplay">
+    <resultMap id="WorkOrderTableDisplay" type="com.gs.mall.order.po.WorkOrderTableDisplayData">
         <result column="wo_id" property="wo_id" />
-        <result column="order_id" property="order_id" />
+        <result column="order_id" property="order_id" jdbcType="VARCHAR"/>
         <result column="status" property="status" />
-        <result column="timeFormat" property="timeFormat" />
+        <result column="operation_time" property="operation_time"/>
+        <result column="operation" property="operation"/>
+        <result column="create_time" property="create_time" />
+        <result column="num" property="num" />
         <result column="refundAmount" property="refundAmount" />
         <result column="refundPoints" property="refundPoints" />
         <result column="refundApplicationInstruction" property="refundApplicationInstruction" />
         <result column="fromApplicationPerson" property="fromApplicationPerson" />
+        <result column="fromApplicationPersonId" property="fromApplicationPersonId" />
         <result column="operatedPerson" property="operatedPerson" />
+        <result column="operatedPersonId" property="operatedPersonId" />
+        <result column="owner" property="owner" />
     </resultMap>
-    <select id="dis">
-        SELECT e.wo_id,e.operator,e.operator_id,e.operation,e.operation_time,
-        e.from_operator,e.from_operator_id,e.reason,e.order_id,f.price,f.points
-         from
-        (SELECT c.wo_id,c.operator,c.operator_id,c.operation,c.operation_time,c.from_operator,c.from_operator_id,c.reason,d.order_id from
-          ((SELECT a.wo_id,a.operator,a.operator_id,a.operation,a.operation_time,a.from_operator,a.from_operator_id,a.reason from gs_work_order_flow_rec a right JOIN
-            (SELECT * from gs_work_order_flow WHERE own LIKE '%CW%') b
-              on a.operation=b.operation
-            where a.wo_id='R_wo_id')) c
-          left join gs_work_order_new d
-          on c.wo_id=d.wo_id) e
-        left join gs_refund_commodity f
-        on e.wo_id=f.wo_id
+    <select id="getWorkOrderTableDisplayData" parameterType="com.gs.mall.order.dto.WorkOrderTableDisplayDto" resultMap="WorkOrderTableDisplay">
+        select e.price as refundAmount,e.num as num,e.points as refundPoints,
+          f.wo_id as wo_id,f.order_id as order_id,f.status as status,f.operation as operation,f.operation_time as operation_time,f.create_time as create_time,
+          f.reason as refundApplicationInstruction,f.from_operator as fromApplicationPerson,f.from_operator_id as fromApplicationPersonId,
+          f.operator,f.operator_id,f.own as owner
+          from gs_refund_commodity e
+          RIGHT join
+          (SELECT c.wo_id,d.order_id,c.status,c.operation,c.operation_time,c.create_time,c.reason,c.from_operator,c.from_operator_id,c.operator,c.operator_id,c.own from
+            (SELECT a.*,b.own from gs_work_order_flow_rec a right join (SELECT operation,own from gs_work_order_flow WHERE OWN LIKE CONCAT('%',#{owner},'%')) b
+              on a.operation=b.operation) c
+            left join
+            (SELECT * from gs_work_order_new
+              <where>
+                  <if test="order_id != null">
+                      order_id=#{order_id,jdbcType=VARCHAR}
+                  </if></where>) d
+            on c.wo_id=d.wo_id ) f
+        on f.wo_id=e.wo_id
+        <where>
+            <if test="startTime != null">
+                create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
+            </if>
+        </where>
+        ORDER BY f.order_id,f.create_time DESC
     </select>
 
 

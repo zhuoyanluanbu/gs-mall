@@ -17,6 +17,7 @@ import java.util.Map;
 public class WorkOrderFlow extends MyObject implements Comparator<WorkOrderFlow>{
 
     public static final String View = "View";//审核
+    public static final String NoticeBackMail = "NoticeBackMail";//寄回快递
     public static final String BackMail = "BackMail";//寄回快递
     public static final String ReceivedMail = "ReceivedMail";//收到快递
     public static final String FinanceView = "FinanceView";//财务审核

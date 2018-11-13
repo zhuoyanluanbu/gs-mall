@@ -11,6 +11,7 @@ public class WorkOrderFlowRecDescription extends MyObject {
     private String description;//描述
     private int displayPlatform;//显示平台
     private String workOrderOperation;//操作名
+    private String reason;//原因
 
     public WorkOrderFlowRecDescription() {
     }
@@ -47,19 +48,21 @@ public class WorkOrderFlowRecDescription extends MyObject {
         this.workOrderOperation = workOrderOperation;
     }
 
-    public WorkOrderFlowRecDescription(int status, int displayPlatform, String workOrderOperation) {
-        this.status = status;
-        this.displayPlatform = displayPlatform;
-        this.workOrderOperation = workOrderOperation;
+    public String getReason() {
+        return reason;
     }
 
-    public WorkOrderFlowRecDescription(int status, String description, int displayPlatform, String workOrderOperation) {
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public WorkOrderFlowRecDescription(int status, String description, int displayPlatform, String workOrderOperation, String reason) {
         this.status = status;
         this.description = description;
         this.displayPlatform = displayPlatform;
         this.workOrderOperation = workOrderOperation;
+        this.reason = reason;
     }
-
 
     //给前端看的状态
     public static WorkOrderFlowRecDescription instanceForApp(WorkOrderFlowRec wofr){
@@ -71,6 +74,12 @@ public class WorkOrderFlowRecDescription extends MyObject {
                 case 0:desc = "您的售后申请已提交";break;
                 case 1:desc = "客服已经受理了您的申请";break;
                 case 2:desc = "您的售后申请未通过";break;
+            }
+        }else if (operation.equalsIgnoreCase(WorkOrderFlow.NoticeBackMail)){
+            switch (status){
+                case 0:desc = "客服正在处理快递寄回信息";break;
+                case 1:desc = "请寄回，快递信息："+wofr.getLogistics();break;
+                case 2: desc = "";break;
             }
         }else if (operation.equalsIgnoreCase(WorkOrderFlow.BackMail)){
             switch (status){
@@ -89,19 +98,31 @@ public class WorkOrderFlowRecDescription extends MyObject {
                 case 1:desc = "售后已完成";break;
             }
         }
-        return new WorkOrderFlowRecDescription(status,desc,0,operation);
+        return new WorkOrderFlowRecDescription(status,desc,0,operation,wofr.getReason());
     }
 
     //给管理平台看的状态
     public static WorkOrderFlowRecDescription instanceForManager(WorkOrderFlowRec wofr){
         String operation = wofr.getOperation();
         int status = wofr.getStatus();
+        return instanceForManager(operation,status,wofr.getLogistics(),wofr.getReason());
+    }
+
+
+    //给管理平台看的状态
+    public static WorkOrderFlowRecDescription instanceForManager(String operation,int status,String logistics,String reason){
         String desc = "";
         if (operation.equalsIgnoreCase(WorkOrderFlow.View)){
             switch (status){
                 case 0:desc = "待审核";break;
                 case 1:desc = "已受理";break;
                 case 2:desc = "驳回";break;
+            }
+        }else if (operation.equalsIgnoreCase(WorkOrderFlow.NoticeBackMail)){
+            switch (status){
+                case 0:desc = "待填写寄回的物流信息";break;
+                case 1:desc = "寄回的物流信息："+logistics;break;
+                case 2: desc = "";break;
             }
         }else if (operation.equalsIgnoreCase(WorkOrderFlow.BackMail)){
             switch (status){
@@ -126,7 +147,7 @@ public class WorkOrderFlowRecDescription extends MyObject {
         }else if (operation.equalsIgnoreCase(WorkOrderFlow.Close)){
             desc = "关闭工单";
         }
-        return new WorkOrderFlowRecDescription(status,desc,1,operation);
+        return new WorkOrderFlowRecDescription(status,desc,1,operation,reason);
     }
 
 
@@ -141,6 +162,8 @@ public class WorkOrderFlowRecDescription extends MyObject {
                 case 1:desc = "已受理";break;
                 case 2:desc = "驳回";break;
             }
+        }else if (operation.equalsIgnoreCase(WorkOrderFlow.NoticeBackMail)){
+            desc = "等待退回";
         }else if (operation.equalsIgnoreCase(WorkOrderFlow.BackMail)){
             switch (status){
                 case 0:desc = "等待退回";break;
@@ -160,7 +183,7 @@ public class WorkOrderFlowRecDescription extends MyObject {
         }else if (operation.equalsIgnoreCase(WorkOrderFlow.Close)){
             desc = "已关闭";
         }
-        return new WorkOrderFlowRecDescription(status,desc,1,operation);
+        return new WorkOrderFlowRecDescription(status,desc,1,operation,wofr.getReason());
     }
 
 

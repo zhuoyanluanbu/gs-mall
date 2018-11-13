@@ -1,13 +1,10 @@
 package com.gs.mall.order.service;
 
-import com.gs.mall.order.po.RefundCommodity;
-import com.gs.mall.order.po.WorkOrderFlow;
-import com.gs.mall.order.po.WorkOrderFlowRec;
-import com.gs.mall.order.po.WorkOrderV2;
+import com.gs.mall.order.dto.WorkOrderTableDisplayDto;
+import com.gs.mall.order.po.*;
 import com.gs.mall.order.service.impl.WorkOrderV2Exception;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by huyoucheng on 2018/10/31.
@@ -29,6 +26,11 @@ public interface WorkOrderV2Service {
 
     Boolean deleteWorkOrderFlow(int id);
 
+
+    /*
+    * 查询工单
+    * */
+    List<WorkOrderTableDisplayData> getWorkOrderTableDisplayData(WorkOrderTableDisplayDto workOrderTableDisplayDto);
 
 
 }

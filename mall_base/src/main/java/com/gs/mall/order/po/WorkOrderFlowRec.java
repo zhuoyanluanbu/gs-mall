@@ -30,6 +30,33 @@ public class WorkOrderFlowRec extends MyObject {
     private String reason;//如果未通过，这里是原因；通过也可以编写原因
     private String remark;
     private String desc;//描述
+    private Date create_time;
+    private String from_operator;
+    private String from_operator_id;
+
+    public Date getCreate_time() {
+        return create_time;
+    }
+
+    public void setCreate_time(Date create_time) {
+        this.create_time = create_time;
+    }
+
+    public String getFrom_operator() {
+        return from_operator;
+    }
+
+    public void setFrom_operator(String from_operator) {
+        this.from_operator = from_operator;
+    }
+
+    public String getFrom_operator_id() {
+        return from_operator_id;
+    }
+
+    public void setFrom_operator_id(String from_operator_id) {
+        this.from_operator_id = from_operator_id;
+    }
 
     public String getDesc() {
         return desc;
@@ -160,6 +187,26 @@ public class WorkOrderFlowRec extends MyObject {
         this.status = status;
         this.reason = reason;
         this.remark = remark;
+    }
+
+    public WorkOrderFlowRec(int id, String wo_id, String operator_id, String operator, String operation, Date operation_time, int operation_from, String logistics, String pre_operation, String next_operation, int status, String reason, String remark, String desc, Date create_time, String from_operator, String from_operator_id) {
+        this.id = id;
+        this.wo_id = wo_id;
+        this.operator_id = operator_id;
+        this.operator = operator;
+        this.operation = operation;
+        this.operation_time = operation_time;
+        this.operation_from = operation_from;
+        this.logistics = logistics;
+        this.pre_operation = pre_operation;
+        this.next_operation = next_operation;
+        this.status = status;
+        this.reason = reason;
+        this.remark = remark;
+        this.desc = desc;
+        this.create_time = create_time;
+        this.from_operator = from_operator;
+        this.from_operator_id = from_operator_id;
     }
 
 }

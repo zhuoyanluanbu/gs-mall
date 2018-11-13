@@ -5,6 +5,7 @@ import com.gs.mall.order.dao.RefundCommodityDao;
 import com.gs.mall.order.dao.WorkOrderFlowDao;
 import com.gs.mall.order.dao.WorkOrderFlowRecDao;
 import com.gs.mall.order.dao.WorkOrderV2Dao;
+import com.gs.mall.order.dto.WorkOrderTableDisplayDto;
 import com.gs.mall.order.po.*;
 import com.gs.mall.order.service.WorkOrderV2Service;
 import org.apache.log4j.Logger;
@@ -131,6 +132,9 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
         //当前正在进行的操作
         WorkOrderFlowRec currentWorkOrderFlowRec = this.currentWorkOrderByOrderIdOrWoId(clientCurFlowRec.getWo_id());
 
+        if(currentWorkOrderFlowRec==null)
+            throw new WorkOrderV2Exception(WorkOrderV2Exception.Item.WorkOrderNotExist);
+
         if(this.workOrderIsClosed(currentWorkOrderFlowRec))
             throw new WorkOrderV2Exception(WorkOrderV2Exception.Item.WorkOrderClosed);
 
@@ -139,12 +143,18 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
             throw new WorkOrderV2Exception(WorkOrderV2Exception.Item.OperatorNull);
         }
 
-        if (currentWorkOrderFlowRec.getOperation().equalsIgnoreCase(WorkOrderFlow.BackMail)) {
+        if (currentWorkOrderFlowRec.getOperation().equalsIgnoreCase(WorkOrderFlow.NoticeBackMail) ||
+                currentWorkOrderFlowRec.getOperation().equalsIgnoreCase(WorkOrderFlow.BackMail)) {
             if (!StringUtil.isNotEmpty(clientCurFlowRec.getLogistics())) { //  为空
                 //这里应该抛异常，未填写物流号
                 throw new WorkOrderV2Exception(WorkOrderV2Exception.Item.LogisticsError);
             }
         }
+
+        if (clientCurFlowRec.getStatus()== WorkOrderFlowRec.NotPass && !StringUtil.isNotEmpty(clientCurFlowRec.getReason()))
+            throw new WorkOrderV2Exception(WorkOrderV2Exception.Item.ReasonNull);
+
+
 
         this.setReadyUpdateData(currentWorkOrderFlowRec, clientCurFlowRec);
         currentWorkOrderFlowRec = this.updateFlowRec(currentWorkOrderFlowRec);
@@ -169,8 +179,9 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
             WorkOrderFlowRec nextWorkOrderFlowRec = this.insertFlowRec(new WorkOrderFlowRec(0, current.getWo_id(),
                     null, null, nextWorkOrderFlow.getOperation(), new Date(), -1, null,
                     current.getOperation(),
-                    nextNextWorkOrderFlow==null?
-                            null:nextNextWorkOrderFlow.getOperation(), 0, null, null));
+                    nextNextWorkOrderFlow==null? null:nextNextWorkOrderFlow.getOperation(),
+                    nextWorkOrderFlow.getOperation().equals(WorkOrderFlow.Close)?1:0,
+                    null, null,null,new Date(),current.getOperator(),current.getOperator_id()));
             return nextWorkOrderFlowRec;
         } else if (current.getStatus() == WorkOrderFlowRec.NotPass) {
             if (!this.getAllWorkOrderFlowsMap().get(current.getOperation())
@@ -178,7 +189,7 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
                 WorkOrderFlowRec closeWorkOrderFlowRec = this.insertFlowRec(new WorkOrderFlowRec(0, current.getWo_id(),
                         current.getOperator_id(), current.getOperator(),
                         WorkOrderFlow.Close, new Date(), 1, null, current.getOperation(),
-                        null, 1, current.getReason(), current.getRemark()));
+                        null, 1, current.getReason(), current.getRemark(),null,new Date(),current.getFrom_operator(),current.getFrom_operator_id()));
                 return closeWorkOrderFlowRec;
             } else {
                 //回到上一步骤
@@ -186,7 +197,7 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
                         null, null, current.getPre_operation(), new Date(), 1, null,
                         this.getPreAndNextFlowByName(current.getPre_operation())[0]==null?
                                 null:this.getPreAndNextFlowByName(current.getPre_operation())[0].getOperation(),
-                        current.getOperation(), 0, null, ""));
+                        current.getOperation(), 0, null, null,null,new Date(),current.getOperator(), current.getOperator_id()));
                 return rollBackWorkOrderFlowRec;
             }
         }
@@ -269,6 +280,42 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
     @Override
     public Boolean deleteWorkOrderFlow(int id) {
         return workOrderFlowDao.deleteById(id) > 0;
+    }
+
+    /*
+    * 查询工单
+    * 时间复杂程度为O(n)
+    * */
+    @Override
+    public List<WorkOrderTableDisplayData> getWorkOrderTableDisplayData(WorkOrderTableDisplayDto workOrderTableDisplayDto) {
+        //查询出来的数据可能是下面这种形式,需要通过order_id分理处各个order_id的最新状态
+        //order_id:1 -- [o1,o2]
+        //order_id:2 -- [o1,o2]
+        //order_id:3 -- [o1,o2,o3]
+        List<WorkOrderTableDisplayData> workOrderTableDisplayDataListAllOrderIds = workOrderFlowRecDao.getWorkOrderTableDisplayData(workOrderTableDisplayDto);
+        List<WorkOrderTableDisplayData> workOrderTableDisplayDatas = new ArrayList<>();
+        Map<String,WorkOrderTableDisplayData> map = new HashMap<>();
+        for (WorkOrderTableDisplayData wotdd:workOrderTableDisplayDataListAllOrderIds){
+            WorkOrderFlowRecDescription workOrderFlowRecDescription =
+                    WorkOrderFlowRecDescription.instanceForManager(wotdd.getOperation(),wotdd.getStatus(),null,wotdd.getRefundApplicationInstruction());
+            wotdd.setStatusDescription(workOrderFlowRecDescription.getDescription());
+            //如果map里面含有这个order_id的实体,比较map里面的实体的operation和wotdd的operation两者的顺序，保留顺序靠后的，顺序靠后的是最新的步骤
+            if (map.containsKey(wotdd.getOrder_id())){
+                String operation = map.get(wotdd.getOrder_id()).getOperation();
+                int sortInMap = this.getAllWorkOrderFlowsMap().get(operation).getSort();
+                int sortInWotdd = this.getAllWorkOrderFlowsMap().get(wotdd.getOperation()).getSort();
+                if (sortInWotdd > sortInMap){
+                    map.put(wotdd.getOrder_id(),wotdd);
+                }
+            }else {//如果map里面不含有这个order_id的实体，直接添加到map
+                map.put(wotdd.getOrder_id(),wotdd);
+            }
+        }
+        for (Map.Entry<String,WorkOrderTableDisplayData> entry:map.entrySet()){
+            //因为map里面的值只会有一个元素，所以直接添加map的值
+            workOrderTableDisplayDatas.add(entry.getValue());
+        }
+        return workOrderTableDisplayDatas;
     }
 
 
