@@ -161,7 +161,7 @@
           (SELECT c.wo_id,d.order_id,c.status,c.operation,c.operation_time,c.create_time,c.reason,c.from_operator,c.from_operator_id,c.operator,c.operator_id,c.own from
             (SELECT a.*,b.own from gs_work_order_flow_rec a right join (SELECT operation,own from gs_work_order_flow WHERE OWN LIKE CONCAT('%',#{owner},'%')) b
               on a.operation=b.operation) c
-            left join
+            right join
             (SELECT * from gs_work_order_new
               <where>
                   <if test="order_id != null">
@@ -171,10 +171,10 @@
         on f.wo_id=e.wo_id
         <where>
             <if test="startTime != null">
-                create_time &gt;= #{startTime}
+                f.create_time &gt;= #{startTime}
             </if>
             <if test="endTime != null">
-                and create_time &lt;= #{endTime}
+                and f.create_time &lt;= #{endTime}
             </if>
         </where>
         ORDER BY f.order_id,f.create_time DESC

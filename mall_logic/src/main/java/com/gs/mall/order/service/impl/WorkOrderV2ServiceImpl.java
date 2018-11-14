@@ -39,7 +39,8 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
         workOrderFlows.put("map", workOrderFlowMap);
         WorkOrderFlowLink workOrderFlowLink = new WorkOrderFlowLink(workOrderFlowList.get(0));
         for (int i = 1; i < workOrderFlowList.size(); i++) {
-            workOrderFlowLink.add(new WorkOrderFlowLink(workOrderFlowList.get(i)));
+            if (workOrderFlowList.get(i).getOperation() != WorkOrderFlow.Close)
+                workOrderFlowLink.add(new WorkOrderFlowLink(workOrderFlowList.get(i)));
         }
         workOrderFlows.put("link", workOrderFlowLink);
     }
@@ -63,14 +64,27 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
     * */
     @Override
     @Transactional
-    public Boolean submitWorkOrder(WorkOrderV2 workOrderV2, RefundCommodity refundCommodity) {
+    public Boolean submitWorkOrder(WorkOrderV2 workOrderV2, RefundCommodity refundCommodity,String other) throws WorkOrderV2Exception{
         if (workOrderV2Dao.insert(workOrderV2) > 0) {
-            int currentIndex = 0;
-            List<WorkOrderFlow> workOrderFlowList = this.getAllWorkOrderFlowsList();
-            WorkOrderFlow workOrderFlow = workOrderFlowList.get(currentIndex);
-            WorkOrderFlowRec workOrderFlowRec = new WorkOrderFlowRec(0, workOrderV2.getWo_id(), null, null, workOrderFlow.getOperation(), new Date(),
-                    workOrderV2.getFromwhere(), null, null, workOrderFlowList.get(currentIndex + 1).getOperation(), 0, workOrderV2.getWo_reason(),
-                    workOrderV2.getRemark());
+            Map<String,WorkOrderFlow> workOrderFlowMap = this.getAllWorkOrderFlowsMap();
+            WorkOrderFlowRec workOrderFlowRec;
+            WorkOrderFlow workOrderFlow;
+            if (workOrderV2.getFromwhere() == 1) {//如果提交工单直接由后台发起
+                if (!StringUtil.isNotEmpty(other))
+                    throw new WorkOrderV2Exception(WorkOrderV2Exception.Item.LogisticsError);
+                workOrderFlow = workOrderFlowMap.get(WorkOrderFlow.NoticeBackMail);
+                workOrderFlowRec = new WorkOrderFlowRec(0, workOrderV2.getWo_id(), workOrderV2.getFromid(), workOrderV2.getFromname(),
+                        workOrderFlow.getOperation(), new Date(),
+                        1, other, null, this.getPreAndNextFlowByName(workOrderFlow.getOperation())[1].getOperation(),
+                        0, workOrderV2.getWo_reason(),
+                        workOrderV2.getRemark());
+            }else {
+                workOrderFlow = workOrderFlowMap.get(WorkOrderFlow.View);
+                workOrderFlowRec = new WorkOrderFlowRec(0, workOrderV2.getWo_id(), null, null, workOrderFlow.getOperation(), new Date(),
+                        workOrderV2.getFromwhere(), null, null, this.getPreAndNextFlowByName(workOrderFlow.getOperation())[1].getOperation(),
+                        0, workOrderV2.getWo_reason(),
+                        workOrderV2.getRemark());
+            }
             if (workOrderFlowRecDao.insert(workOrderFlowRec) > 0 &&
                     refundCommodityDao.insert(refundCommodity) > 0) {
                 return true;
@@ -122,6 +136,18 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
         if (workOrderFlowRec.getOperation().equals(WorkOrderFlow.Close)) return true;
         return false;
     }
+    /*
+    * 当前工单是否已经完成
+    * */
+    public boolean workOrderIsFinished(String order_idOrWo_id){
+        if (this.currentWorkOrderByOrderIdOrWoId(order_idOrWo_id).getOperation().equalsIgnoreCase(WorkOrderFlow.Finish))
+            return true;
+        return false;
+    }
+    public boolean workOrderIsFinished(WorkOrderFlowRec workOrderFlowRec){
+        if (workOrderFlowRec.getOperation().equals(WorkOrderFlow.Finish)) return true;
+        return false;
+    }
 
     /*
     * 确认或者驳回当前步骤，生成下一步骤
@@ -137,6 +163,9 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
 
         if(this.workOrderIsClosed(currentWorkOrderFlowRec))
             throw new WorkOrderV2Exception(WorkOrderV2Exception.Item.WorkOrderClosed);
+
+        if(this.workOrderIsFinished(currentWorkOrderFlowRec))
+            throw new WorkOrderV2Exception(WorkOrderV2Exception.Item.WorkOrderFinished);
 
         if (!StringUtil.isNotEmpty(clientCurFlowRec.getOperator_id()) || !StringUtil.isNotEmpty(clientCurFlowRec.getOperator())) {
             //这里必须填写操作者
@@ -180,7 +209,7 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
                     null, null, nextWorkOrderFlow.getOperation(), new Date(), -1, null,
                     current.getOperation(),
                     nextNextWorkOrderFlow==null? null:nextNextWorkOrderFlow.getOperation(),
-                    nextWorkOrderFlow.getOperation().equals(WorkOrderFlow.Close)?1:0,
+                    nextWorkOrderFlow.getOperation().equalsIgnoreCase(WorkOrderFlow.Finish)?1:0,
                     null, null,null,new Date(),current.getOperator(),current.getOperator_id()));
             return nextWorkOrderFlowRec;
         } else if (current.getStatus() == WorkOrderFlowRec.NotPass) {
@@ -188,7 +217,7 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
                     .getOwn().contains(WorkOrderFlow.WorkOrderFlowOwner.Finance)) {//如果当前步骤没有财务参与,客服不通过，直接关闭工单
                 WorkOrderFlowRec closeWorkOrderFlowRec = this.insertFlowRec(new WorkOrderFlowRec(0, current.getWo_id(),
                         current.getOperator_id(), current.getOperator(),
-                        WorkOrderFlow.Close, new Date(), 1, null, current.getOperation(),
+                        WorkOrderFlow.Finish, new Date(), 1, null, current.getOperation(),
                         null, 1, current.getReason(), current.getRemark(),null,new Date(),current.getFrom_operator(),current.getFrom_operator_id()));
                 return closeWorkOrderFlowRec;
             } else {
@@ -202,6 +231,15 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
             }
         }
         return current;
+    }
+
+    /*
+    * 工单关闭
+    * */
+    public WorkOrderFlowRec closeWorkOrder(WorkOrderFlowRec workOrderFlowRec){
+        workOrderFlowRec.setOperation(WorkOrderFlow.Close);
+        workOrderFlowRec.setStatus(1);
+        return this.updateFlowRec(workOrderFlowRec);
     }
 
     /*

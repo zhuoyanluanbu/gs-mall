@@ -16,7 +16,7 @@ import java.util.List;
  * Created by huyoucheng on 2018/10/31.
  */
 @RestController
-@RequestMapping(value = "/back/workOrder",produces = "application/json;charset=utf-8")
+@RequestMapping(produces = "application/json;charset=utf-8")
 public class WorkOrderV2Controller {
 
     @Autowired
@@ -27,9 +27,27 @@ public class WorkOrderV2Controller {
     * @param workOrderClientReq
     * @return
     * */
-    @RequestMapping(value = "/submit",method = RequestMethod.PUT)
-    public ResponseResult submitWorkOrder(@RequestBody WorkOrderClientReq workOrderClientReq){
-        return ResponseResult.successInstance().setData(workOrderV2Service.submitWorkOrder(workOrderClientReq.getWorkOrderV2(),workOrderClientReq.getRefundCommodity()));
+    @RequestMapping(value = "/app/workOrder/submit",method = RequestMethod.PUT)
+    public ResponseResult submitWorkOrderApp(@RequestBody WorkOrderClientReq workOrderClientReq){
+        workOrderClientReq.getWorkOrderV2().setFromwhere(0);
+        workOrderClientReq.getRefundCommodity().setWoId(workOrderClientReq.getWorkOrderV2().getWo_id());
+        try {
+            return ResponseResult.successInstance().setData(workOrderV2Service.submitWorkOrder(workOrderClientReq.getWorkOrderV2(),workOrderClientReq.getRefundCommodity(),workOrderClientReq.getOther()));
+        } catch (WorkOrderV2Exception e) {
+            e.printStackTrace();
+            return ResponseResult.instance(e.getCode(),e.getMsg());
+        }
+    }
+    @RequestMapping(value = "/back/workOrder/submit",method = RequestMethod.PUT)
+    public ResponseResult submitWorkOrderManager(@RequestBody WorkOrderClientReq workOrderClientReq){
+        workOrderClientReq.getWorkOrderV2().setFromwhere(1);
+        workOrderClientReq.getRefundCommodity().setWoId(workOrderClientReq.getWorkOrderV2().getWo_id());
+        try {
+            return ResponseResult.successInstance().setData(workOrderV2Service.submitWorkOrder(workOrderClientReq.getWorkOrderV2(),workOrderClientReq.getRefundCommodity(),workOrderClientReq.getOther()));
+        } catch (WorkOrderV2Exception e) {
+            e.printStackTrace();
+            return ResponseResult.instance(e.getCode(),e.getMsg());
+        }
     }
 
     /*
@@ -37,9 +55,11 @@ public class WorkOrderV2Controller {
     * @param orderIdOrWoId
     * @return
     * */
-    @RequestMapping(value = "/current/{orderIdOrWoId}",method = RequestMethod.GET)
+    @RequestMapping(value = "/back/workOrder/current/{orderIdOrWoId}",method = RequestMethod.GET)
     public ResponseResult currentWorkOrderFlowByOrderId(@PathVariable("orderIdOrWoId") String orderIdOrWoId){
-        return ResponseResult.successInstance().setData(workOrderV2Service.currentWorkOrderByOrderIdOrWoId(orderIdOrWoId));
+        WorkOrderFlowRec wr = workOrderV2Service.currentWorkOrderByOrderIdOrWoId(orderIdOrWoId);
+        wr.setDesc(WorkOrderFlowRecDescription.instanceForManager(wr).getDescription());
+        return ResponseResult.successInstance().setData(wr);
     }
 
     /*
@@ -47,7 +67,7 @@ public class WorkOrderV2Controller {
     * @param orderIdOrWoId
      * @return
     * */
-    @RequestMapping(value = "/workOrderFlowRecs/{orderIdOrWoId}",method = RequestMethod.GET)
+    @RequestMapping(value = "/back/workOrder/workOrderFlowRecs/{orderIdOrWoId}",method = RequestMethod.GET)
     public ResponseResult workOrderFlowRecs(@PathVariable("orderIdOrWoId") String orderIdOrWoId){
         List<WorkOrderFlowRec> workOrderFlowRecList = workOrderV2Service.allExistWorkOrderFlowRec(orderIdOrWoId);
         workOrderFlowRecList.forEach(wr -> {
@@ -61,7 +81,7 @@ public class WorkOrderV2Controller {
     * @param passOrNot
     * @return
     * */
-    @RequestMapping(value = "/current/{passOrNot}",method = RequestMethod.POST)
+    @RequestMapping(value = "/back/workOrder/current/{passOrNot}",method = RequestMethod.POST)
     public ResponseResult currentWorkOrderFlowPassOrNot(@PathVariable("passOrNot") int passOrNot,@RequestBody WorkOrderFlowRec clientWorkOrderFlowRec){
         //1通过 2驳回
         clientWorkOrderFlowRec.setStatus(passOrNot);
@@ -73,17 +93,17 @@ public class WorkOrderV2Controller {
         }
     }
 
-    @RequestMapping(value = "/wordOrderFlows",method = RequestMethod.GET)
+    @RequestMapping(value = "/back/workOrder/wordOrderFlows",method = RequestMethod.GET)
     public ResponseResult wordOrderFlows(){
         return ResponseResult.successInstance().setData(workOrderV2Service.getAllWorkOrderFlowsList());
     }
 
-    @RequestMapping(value = "/wordOrderFlows",method = RequestMethod.POST)
+    @RequestMapping(value = "/back/workOrder/wordOrderFlows",method = RequestMethod.POST)
     public ResponseResult wordOrderFlowsInsertOrUpdate(@RequestBody WorkOrderFlow workOrderFlow){
         return ResponseResult.successInstance().setData(workOrderV2Service.saveOrUpdate(workOrderFlow));
     }
 
-    @RequestMapping(value = "/wordOrderFlows/insetlist",method = RequestMethod.POST)
+    @RequestMapping(value = "/back/workOrder/wordOrderFlows/insetlist",method = RequestMethod.POST)
     public ResponseResult wordOrderFlowsInsertOrUpdate(@RequestBody List<WorkOrderFlow> workOrderFlows){
         int[] i = {1};
         workOrderFlows.forEach(w -> {
@@ -101,8 +121,8 @@ public class WorkOrderV2Controller {
     * @param
     * @return
     * */
-    @RequestMapping(value = "/workOrderFlowRecs/search",method = RequestMethod.POST)
-    public ResponseResult wordOrderFlowsDescription(@RequestBody WorkOrderTableDisplayDto workOrderTableDisplayDto){
+    @RequestMapping(value = "/back/workOrder/workOrderFlowRecs/search",method = RequestMethod.POST)
+    public ResponseResult wordOrderFlowsSearch(@RequestBody WorkOrderTableDisplayDto workOrderTableDisplayDto){
         List<WorkOrderTableDisplayData> workOrderTableDisplayDatas = workOrderV2Service.getWorkOrderTableDisplayData(workOrderTableDisplayDto);
         return ResponseResult.successInstance().setData(workOrderTableDisplayDatas);
     }
@@ -113,7 +133,7 @@ public class WorkOrderV2Controller {
     * @param orderIdOrWoId
     * @return
     * */
-    @RequestMapping(value = "/workOrderFlowRecs/description/current/{orderIdOrWoId}",method = RequestMethod.GET)
+    @RequestMapping(value = "/back/workOrder/workOrderFlowRecs/description/current/{orderIdOrWoId}",method = RequestMethod.GET)
     public ResponseResult currentWordOrderFlowDescription(@PathVariable("orderIdOrWoId") String orderIdOrWoId){
         List<WorkOrderFlowRec> workOrderFlowRecList = workOrderV2Service.allExistWorkOrderFlowRec(orderIdOrWoId);
         List<WorkOrderFlowRecDescription> wo_descriptions = new ArrayList<>();
@@ -128,7 +148,7 @@ public class WorkOrderV2Controller {
     * @param orderIdOrWoId
     * @return
     * */
-    @RequestMapping(value = "/workOrderFlowRecs/description/{orderIdOrWoId}",method = RequestMethod.GET)
+    @RequestMapping(value = "/back/workOrder/workOrderFlowRecs/description/{orderIdOrWoId}",method = RequestMethod.GET)
     public ResponseResult wordOrderFlowsDescription(@PathVariable("orderIdOrWoId") String orderIdOrWoId){
         List<WorkOrderFlowRec> workOrderFlowRecList = workOrderV2Service.allExistWorkOrderFlowRec(orderIdOrWoId);
         List<WorkOrderFlowRecDescription> wo_descriptions = new ArrayList<>();

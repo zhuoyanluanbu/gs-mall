@@ -1,6 +1,6 @@
 server:
   port: 8011
-  context-path: /mall-web
+#  context-path: /mall-web
 
 mybatis:
   mapper-locations: classpath*:com/gs/mall/**/dao/config/*.xml

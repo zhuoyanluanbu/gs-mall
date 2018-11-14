@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface WorkOrderV2Service {
 
-    Boolean submitWorkOrder(WorkOrderV2 workOrderV2,RefundCommodity refundCommodity);
+    Boolean submitWorkOrder(WorkOrderV2 workOrderV2,RefundCommodity refundCommodity,String other) throws WorkOrderV2Exception;
 
     WorkOrderFlowRec currentWorkOrderByOrderIdOrWoId(String order_id);
 
@@ -32,5 +32,10 @@ public interface WorkOrderV2Service {
     * */
     List<WorkOrderTableDisplayData> getWorkOrderTableDisplayData(WorkOrderTableDisplayDto workOrderTableDisplayDto);
 
+
+    /*
+    * 关闭工单
+    * */
+    WorkOrderFlowRec closeWorkOrder(WorkOrderFlowRec workOrderFlowRec);
 
 }

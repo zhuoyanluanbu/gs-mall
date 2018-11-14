@@ -9,13 +9,17 @@ public class WorkOrderClientReq extends MyObject {
 
     private WorkOrderV2 workOrderV2;
     private RefundCommodity refundCommodity;
+    private String other;//后台提交的时候，这里可以填写寄回的地址信息
 
     public WorkOrderClientReq() {
     }
 
-    public WorkOrderClientReq(WorkOrderV2 workOrderV2, RefundCommodity refundCommodity) {
-        this.workOrderV2 = workOrderV2;
-        this.refundCommodity = refundCommodity;
+    public String getOther() {
+        return other;
+    }
+
+    public void setOther(String other) {
+        this.other = other;
     }
 
     public WorkOrderV2 getWorkOrderV2() {

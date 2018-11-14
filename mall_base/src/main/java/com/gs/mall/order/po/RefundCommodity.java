@@ -2,6 +2,8 @@ package com.gs.mall.order.po;
 
 import com.gs.mall.common.po.MyObject;
 
+import java.util.Date;
+
 
 /**
  * @author:huangyp
@@ -39,7 +41,7 @@ public class RefundCommodity extends MyObject{
     private java.lang.Integer num;
 
     /** 创建时间 */
-    private java.util.Date createTime;
+    private java.util.Date createTime = new Date();
 
     private java.lang.String imgUri;
 

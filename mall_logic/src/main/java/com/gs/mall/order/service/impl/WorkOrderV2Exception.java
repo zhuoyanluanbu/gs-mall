@@ -63,9 +63,10 @@ public class WorkOrderV2Exception extends Exception {
     public enum Item{
         WorkOrderNotExist(40000,"当前工单不存在"),
         WorkOrderClosed(40001,"当前工单已关闭"),
-        OperatorNull(40002,"请填写操作者id或者操作者"),
-        LogisticsError(40003,"请检查物流信息"),
-        ReasonNull(40004,"请填写原因");
+        WorkOrderFinished(40002,"当前工单已完成"),
+        OperatorNull(40003,"请填写操作者id或者操作者"),
+        LogisticsError(40004,"请检查物流信息"),
+        ReasonNull(40005,"请填写原因");
 
         private int code;
         private String msg;
