@@ -36,6 +36,6 @@ public interface WorkOrderV2Service {
     /*
     * 关闭工单
     * */
-    WorkOrderFlowRec closeWorkOrder(WorkOrderFlowRec workOrderFlowRec);
+    WorkOrderFlowRec closeWorkOrder(WorkOrderFlowRec workOrderFlowRec) throws WorkOrderV2Exception;
 
 }

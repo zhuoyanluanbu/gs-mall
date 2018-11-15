@@ -76,31 +76,31 @@
     <update id="update" parameterType="com.gs.mall.order.po.WorkOrderV2">
       UPDATE <include refid="table_name" />
         <set>
-            <if test="params.order_id != null">
+            <if test="order_id != null">
                 order_id = #{order_id},
             </if>
-            <if test="params.wo_id != null">
+            <if test="wo_id != null">
                wo_id = #{wo_id},
             </if>
-            <if test="params.wo_reason != null">
+            <if test="wo_reason != null">
                wo_reason = #{wo_reason},
             </if>
-            <if test="params.fromid != null">
+            <if test="fromid != null">
                fromid = #{fromid},
             </if>
-            <if test="params.fromname != null">
+            <if test="fromname != null">
                 fromname = #{fromname},
             </if>
-            <if test="params.fromphone != null">
+            <if test="fromphone != null">
                 fromphone = #{fromphone},
             </if>
-            <if test="params.isrefund != null">
+            <if test="isrefund != null">
                 isrefund = #{isrefund},
             </if>
-            <if test="params.state != null">
+            <if test="state != null">
                 state = #{state},
             </if>
-            <if test="params.remark != null">
+            <if test="remark != null">
                 remark = #{remark}
             </if>
         </set>

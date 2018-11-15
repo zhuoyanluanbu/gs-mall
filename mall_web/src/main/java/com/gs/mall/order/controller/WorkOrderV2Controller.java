@@ -55,7 +55,7 @@ public class WorkOrderV2Controller {
     * @param orderIdOrWoId
     * @return
     * */
-    @RequestMapping(value = "/back/workOrder/current/{orderIdOrWoId}",method = RequestMethod.GET)
+    @RequestMapping(value = "/back/workOrder/workOrderFlowRec/current/{orderIdOrWoId}",method = RequestMethod.GET)
     public ResponseResult currentWorkOrderFlowByOrderId(@PathVariable("orderIdOrWoId") String orderIdOrWoId){
         WorkOrderFlowRec wr = workOrderV2Service.currentWorkOrderByOrderIdOrWoId(orderIdOrWoId);
         wr.setDesc(WorkOrderFlowRecDescription.instanceForManager(wr).getDescription());
@@ -89,6 +89,20 @@ public class WorkOrderV2Controller {
         try {
             return ResponseResult.successInstance().setData(workOrderV2Service.confirmOrRollBackCurrentFlowAndCreateNextFlow(clientWorkOrderFlowRec));
         }catch (WorkOrderV2Exception e){
+            return ResponseResult.instance(e.getCode(),e.getMsg());
+        }
+    }
+
+    /*
+    * 关闭工单
+    *
+    * */
+    @RequestMapping(value = "/back/workOrder/close",method = RequestMethod.POST)
+    public ResponseResult currentWorkOrderFlowPassOrNot(@RequestBody WorkOrderFlowRec clientWorkOrderFlowRec){
+        try {
+            return ResponseResult.successInstance().setData(workOrderV2Service.closeWorkOrder(clientWorkOrderFlowRec));
+        } catch (WorkOrderV2Exception e) {
+            e.printStackTrace();
             return ResponseResult.instance(e.getCode(),e.getMsg());
         }
     }
@@ -165,7 +179,7 @@ public class WorkOrderV2Controller {
     * @param orderIdOrWoId
     * @return
     * */
-    @RequestMapping(value = "/app/workOrderFlowRecs/description/{orderIdOrWoId}",method = RequestMethod.GET)
+    @RequestMapping(value = "/app/workOrder/workOrderFlowRecs/description/{orderIdOrWoId}",method = RequestMethod.GET)
     public ResponseResult wordOrderFlowsDescriptionApp(@PathVariable("orderIdOrWoId") String orderIdOrWoId){
         List<WorkOrderFlowRec> workOrderFlowRecList = workOrderV2Service.allExistWorkOrderFlowRec(orderIdOrWoId);
         List<WorkOrderFlowRecDescription> wo_descriptions = new ArrayList<>();
@@ -182,7 +196,7 @@ public class WorkOrderV2Controller {
     * @param orderIdOrWoId
     * @return
     * */
-    @RequestMapping(value = "/mall/workOrderFlowRecs/description/{orderIdOrWoId}",method = RequestMethod.GET)
+    @RequestMapping(value = "/mall/workOrder/workOrderFlowRecs/description/{orderIdOrWoId}",method = RequestMethod.GET)
     public ResponseResult wordOrderFlowsDescriptionMall(@PathVariable("orderIdOrWoId") String orderIdOrWoId){
         List<WorkOrderFlowRec> workOrderFlowRecList = workOrderV2Service.allExistWorkOrderFlowRec(orderIdOrWoId);
         List<WorkOrderFlowRecDescription> wo_descriptions = new ArrayList<>();
@@ -191,4 +205,6 @@ public class WorkOrderV2Controller {
         }
         return ResponseResult.successInstance().setData(wo_descriptions);
     }
+
 }
+

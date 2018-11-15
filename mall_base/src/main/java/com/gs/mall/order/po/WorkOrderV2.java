@@ -9,6 +9,11 @@ import java.util.Date;
  */
 public class WorkOrderV2 extends MyObject {
 
+    public static final int WaitViewPass = 10;//申请退货（待商家确认)
+    public static final int WaitRefund = 20;//待退款(处理退款中)
+    public static final int HaveRefunded = 30;//已退款
+    public static final int HaveClosed = 40;//关闭
+
     private int id;
     private String order_id;//订单id
     private String wo_id;//工单id
@@ -174,5 +179,10 @@ public class WorkOrderV2 extends MyObject {
         this.state = state;
         this.remark = remark;
         this.isDel = isDel;
+    }
+
+    public WorkOrderV2(String wo_id,int state) {
+        this.state = state;
+        this.wo_id = wo_id;
     }
 }

@@ -174,9 +174,8 @@ public class WorkOrderFlowRecDescription extends MyObject {
             desc = "退款中";
         }else if (operation.equalsIgnoreCase(WorkOrderFlow.FinanceView)){
             switch (status){
-                case 0:desc = "退款中";break;
+                case 0:case 2:desc = "退款中";break;
                 case 1:desc = "已完成";break;
-                case 2:desc = "驳回";break;
             }
         }else if (operation.equalsIgnoreCase(WorkOrderFlow.Finish)){
             desc = "已完成";

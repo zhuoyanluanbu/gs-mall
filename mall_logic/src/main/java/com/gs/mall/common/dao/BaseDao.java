@@ -46,7 +46,7 @@ public interface BaseDao<T,C> {
     int insert(T t);
 
     /**
-     * 删除对象
+     * 修改对象
      * @param t
      * @return
      */
