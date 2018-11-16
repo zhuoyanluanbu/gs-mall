@@ -10,6 +10,7 @@ import com.gs.mall.export.factory.ExcelStyleFactory;
 import com.gs.mall.export.impl.ExcelEngine;
 import com.gs.mall.finance.po.TradeDetail;
 import com.gs.mall.order.po.WorkOrderFlowRec;
+import com.gs.mall.order.po.WorkOrderTableDisplayData;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
@@ -34,7 +35,7 @@ public class WorkOrderFlowRecAdapter implements ExcelFileAdapter {
 
     @Override
     public ExportFile excelFileAdapter(Object data) {
-        List<WorkOrderFlowRec>  wofr = (List<WorkOrderFlowRec>) data;
+        List<WorkOrderTableDisplayData>  wofr = (List<WorkOrderTableDisplayData>) data;
         ExportFile exportFile = new ExportFile();
         exportFile.setType(ExcelEngine.FILE_TYPE);
         String filName = "工单"+System.currentTimeMillis();
@@ -52,7 +53,7 @@ public class WorkOrderFlowRecAdapter implements ExcelFileAdapter {
         List<ExcelCell> cells = new ArrayList<>();
         int colIndex = 0;
         for (String title :
-                Arrays.asList("状态", "申请时间", "商品订单号", "退款金额", "退款申请说明", "申请发起人","退款操作人")) {
+                Arrays.asList("工单编号", "客户信息", "日志内容", "日志时间", "操作人")) {
             cells.add(new ExcelCell(colIndex++, title, ExcelStyleFactory.tableTh()));
         }
         row.setCells(cells);

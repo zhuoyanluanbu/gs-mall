@@ -26,12 +26,15 @@ public interface WorkOrderV2Service {
 
     Boolean deleteWorkOrderFlow(int id);
 
+    /*
+    * 查询工单(各工单的最新状态)
+    * */
+    List<WorkOrderTableDisplayData> getWorkOrderTableDisplayDataNewestState(WorkOrderTableDisplayDto workOrderTableDisplayDto);
 
     /*
-    * 查询工单
+    *
     * */
     List<WorkOrderTableDisplayData> getWorkOrderTableDisplayData(WorkOrderTableDisplayDto workOrderTableDisplayDto);
-
 
     /*
     * 关闭工单

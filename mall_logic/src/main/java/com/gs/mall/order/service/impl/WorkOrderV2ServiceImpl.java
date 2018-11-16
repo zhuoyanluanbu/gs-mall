@@ -88,13 +88,13 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
                         workOrderFlow.getOperation(), new Date(),
                         1, other, null, this.getPreAndNextFlowByName(workOrderFlow.getOperation())[1].getOperation(),
                         0, workOrderV2.getWo_reason(),
-                        workOrderV2.getRemark());
+                        workOrderV2.getRemark(),new Date());
             }else {
                 workOrderFlow = workOrderFlowMap.get(WorkOrderFlow.View);
                 workOrderFlowRec = new WorkOrderFlowRec(0, workOrderV2.getWo_id(), null, null, workOrderFlow.getOperation(), new Date(),
                         workOrderV2.getFromwhere(), null, null, this.getPreAndNextFlowByName(workOrderFlow.getOperation())[1].getOperation(),
                         0, workOrderV2.getWo_reason(),
-                        workOrderV2.getRemark());
+                        workOrderV2.getRemark(),new Date());
             }
             if (workOrderFlowRecDao.insert(workOrderFlowRec) > 0 &&
                     refundCommodityDao.insert(refundCommodity) > 0) {
@@ -367,13 +367,11 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
     }
 
 
-
     /*
-    * 查询工单
-    * 时间复杂程度为O(n)
+    * 查询工单(各个工单的最新状态)
     * */
     @Override
-    public List<WorkOrderTableDisplayData> getWorkOrderTableDisplayData(WorkOrderTableDisplayDto workOrderTableDisplayDto) {
+    public List<WorkOrderTableDisplayData> getWorkOrderTableDisplayDataNewestState(WorkOrderTableDisplayDto workOrderTableDisplayDto) {
         //查询出来的数据可能是下面这种形式,需要通过order_id分理处各个order_id的最新状态
         //order_id:1 -- [o1,o2]
         //order_id:2 -- [o1,o2]
@@ -382,15 +380,17 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
         List<WorkOrderTableDisplayData> workOrderTableDisplayDatas = new ArrayList<>();
         Map<String,WorkOrderTableDisplayData> map = new HashMap<>();
         for (WorkOrderTableDisplayData wotdd:workOrderTableDisplayDataListAllOrderIds){
+            if(!StringUtil.isNotEmpty(wotdd.getOrder_id()) || !StringUtil.isNotEmpty(wotdd.getWo_id()))
+                continue;
             WorkOrderFlowRecDescription workOrderFlowRecDescription =
-                    WorkOrderFlowRecDescription.instanceForManager(wotdd.getOperation(),wotdd.getStatus(),null,wotdd.getRefundApplicationInstruction());
-            wotdd.setStatusDescription(workOrderFlowRecDescription.getDescription());
+                    WorkOrderFlowRecDescription.instanceForManager(wotdd.getOperation(),wotdd.getStatus(),wotdd.getLogistics(),wotdd.getReason());
+            wotdd.setDesc(workOrderFlowRecDescription.getDescription());
             //如果map里面含有这个order_id的实体,比较map里面的实体的operation和wotdd的operation两者的顺序，保留顺序靠后的，顺序靠后的是最新的步骤
             if (map.containsKey(wotdd.getOrder_id())){
                 String operation = map.get(wotdd.getOrder_id()).getOperation();
-                int sortInMap = this.getAllWorkOrderFlowsMap().get(operation).getSort();
-                int sortInWotdd = this.getAllWorkOrderFlowsMap().get(wotdd.getOperation()).getSort();
-                if (sortInWotdd > sortInMap){
+                int increaseIdInMap = this.getAllWorkOrderFlowsMap().get(operation).getId();
+                int increaseIdInWotdd = this.getAllWorkOrderFlowsMap().get(wotdd.getOperation()).getId();
+                if (increaseIdInWotdd > increaseIdInMap){
                     map.put(wotdd.getOrder_id(),wotdd);
                 }
             }else {//如果map里面不含有这个order_id的实体，直接添加到map
@@ -404,5 +404,22 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
         return workOrderTableDisplayDatas;
     }
 
+    /*
+    * 查询工单(各个工单的各个状态)
+    * */
+    @Override
+    public List<WorkOrderTableDisplayData> getWorkOrderTableDisplayData(WorkOrderTableDisplayDto workOrderTableDisplayDto) {
+        List<WorkOrderTableDisplayData> workOrderTableDisplayDataListAllOrderIds = workOrderFlowRecDao.getWorkOrderTableDisplayData(workOrderTableDisplayDto);
+        Iterator<WorkOrderTableDisplayData> it = workOrderTableDisplayDataListAllOrderIds.iterator();
+        while (it.hasNext()){
+            WorkOrderTableDisplayData wotdd = it.next();
+            if(!StringUtil.isNotEmpty(wotdd.getWo_id()) || !StringUtil.isNotEmpty(wotdd.getOrder_id()))
+                it.remove();
+            WorkOrderFlowRecDescription workOrderFlowRecDescription =
+                    WorkOrderFlowRecDescription.instanceForManager(wotdd.getOperation(),wotdd.getStatus(),wotdd.getLogistics(), wotdd.getReason());
+            wotdd.setDesc(workOrderFlowRecDescription.getDescription());
+        }
+        return workOrderTableDisplayDataListAllOrderIds;
+    }
 
 }

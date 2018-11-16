@@ -9,21 +9,51 @@ import java.util.Date;
  */
 public class WorkOrderTableDisplayDto extends MyObject {
 
+    private int startIndex = 0;
+    private int fetchSize = 1;
     private Date startTime;
     private Date endTime;
     private String order_id;
     private String wo_id;
     private String owner;
+    private int wo_state;//工单状态
 
     public WorkOrderTableDisplayDto() {
     }
 
-    public WorkOrderTableDisplayDto(Date startTime, Date endTime, String order_id, String wo_id,String owner) {
+    public WorkOrderTableDisplayDto(int startIndex, int fetchSize, Date startTime, Date endTime, String order_id, String wo_id, String owner, int wo_state) {
+        this.startIndex = startIndex;
+        this.fetchSize = fetchSize;
         this.startTime = startTime;
         this.endTime = endTime;
         this.order_id = order_id;
         this.wo_id = wo_id;
         this.owner = owner;
+        this.wo_state = wo_state;
+    }
+
+    public int getStartIndex() {
+        return startIndex;
+    }
+
+    public void setStartIndex(int startIndex) {
+        this.startIndex = startIndex;
+    }
+
+    public int getFetchSize() {
+        return fetchSize;
+    }
+
+    public void setFetchSize(int fetchSize) {
+        this.fetchSize = fetchSize;
+    }
+
+    public int getWo_state() {
+        return wo_state;
+    }
+
+    public void setWo_state(int wo_state) {
+        this.wo_state = wo_state;
     }
 
     public String getOwner() {

@@ -131,7 +131,18 @@ public class WorkOrderV2Controller {
 
 
     /*
-    * 工单搜索
+    * 工单搜索(各个工单的最新状态)
+    * @param
+    * @return
+    * */
+    @RequestMapping(value = "/back/workOrder/workOrderFlowRecs/newestState/search",method = RequestMethod.POST)
+    public ResponseResult wordOrderFlowsSearchNewestState(@RequestBody WorkOrderTableDisplayDto workOrderTableDisplayDto){
+        List<WorkOrderTableDisplayData> workOrderTableDisplayDatas = workOrderV2Service.getWorkOrderTableDisplayDataNewestState(workOrderTableDisplayDto);
+        return ResponseResult.successInstance().setData(workOrderTableDisplayDatas);
+    }
+
+    /*
+    * 工单搜索(各个工单的所有状态)
     * @param
     * @return
     * */

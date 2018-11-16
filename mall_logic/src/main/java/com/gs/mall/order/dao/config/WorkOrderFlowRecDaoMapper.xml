@@ -152,32 +152,36 @@
         <result column="owner" property="owner" />
     </resultMap>
     <select id="getWorkOrderTableDisplayData" parameterType="com.gs.mall.order.dto.WorkOrderTableDisplayDto" resultMap="WorkOrderTableDisplay">
-        select e.price as refundAmount,e.num as num,e.points as refundPoints,
-          f.wo_id as wo_id,f.order_id as order_id,f.status as status,f.operation as operation,f.operation_time as operation_time,f.create_time as create_time,
-          f.reason as refundApplicationInstruction,f.from_operator as fromApplicationPerson,f.from_operator_id as fromApplicationPersonId,
+        select e.price as refundAmount,e.num as num,e.points as refundPoints,f.id,
+          f.wo_id,f.order_id,f.status,f.operation,f.operation_time,f.create_time,
+          f.logistics,f.reason,f.from_operator,f.from_operator_id,
           f.operator,f.operator_id,f.own as owner
           from gs_refund_commodity e
           RIGHT join
-          (SELECT c.wo_id,d.order_id,c.status,c.operation,c.operation_time,c.create_time,c.reason,c.from_operator,c.from_operator_id,c.operator,c.operator_id,c.own from
-            (SELECT a.*,b.own from gs_work_order_flow_rec a right join (SELECT operation,own from gs_work_order_flow WHERE OWN LIKE CONCAT('%',#{owner},'%')) b
+          (SELECT c.id,c.wo_id,d.order_id,c.status,c.operation,c.operation_time,c.create_time,c.logistics,c.reason,c.from_operator,
+              c.from_operator_id,c.operator,c.operator_id,c.own from
+            (SELECT a.*,b.own from gs_work_order_flow_rec a right join (SELECT operation,own from gs_work_order_flow
+              <where><if test="owner != null">OWN LIKE CONCAT('%',#{owner},'%')</if></where>) b
               on a.operation=b.operation) c
-            right join
+            RIGHT join
             (SELECT * from gs_work_order_new
               <where>
                   <if test="order_id != null">
                       order_id=#{order_id,jdbcType=VARCHAR}
-                  </if></where>) d
+                  </if>
+                  <if test="startTime != null">
+                      and createtime &gt;= #{startTime}
+                  </if>
+                  <if test="endTime != null">
+                      and createtime &lt;= #{endTime}
+                  </if>
+              </where>
+            ORDER BY id DESC
+            limit #{startIndex},#{fetchSize}) d
             on c.wo_id=d.wo_id ) f
         on f.wo_id=e.wo_id
-        <where>
-            <if test="startTime != null">
-                f.create_time &gt;= #{startTime}
-            </if>
-            <if test="endTime != null">
-                and f.create_time &lt;= #{endTime}
-            </if>
-        </where>
-        ORDER BY f.order_id,f.create_time DESC
+        WHERE f.id IS NOT NULL
+        ORDER BY f.order_id DESC,f.id DESC
     </select>
 
 

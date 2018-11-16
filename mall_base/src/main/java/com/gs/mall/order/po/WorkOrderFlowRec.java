@@ -173,7 +173,7 @@ public class WorkOrderFlowRec extends MyObject {
     public WorkOrderFlowRec() {
     }
 
-    public WorkOrderFlowRec(int id, String wo_id, String operator_id, String operator, String operation, Date operation_time, int operation_from, String logistics, String pre_operation, String next_operation, int status, String reason, String remark) {
+    public WorkOrderFlowRec(int id, String wo_id, String operator_id, String operator, String operation, Date operation_time, int operation_from, String logistics, String pre_operation, String next_operation, int status, String reason, String remark,Date create_time) {
         this.id = id;
         this.wo_id = wo_id;
         this.operator_id = operator_id;
@@ -187,6 +187,7 @@ public class WorkOrderFlowRec extends MyObject {
         this.status = status;
         this.reason = reason;
         this.remark = remark;
+        this.create_time = create_time;
     }
 
     public WorkOrderFlowRec(int id, String wo_id, String operator_id, String operator, String operation, Date operation_time, int operation_from, String logistics, String pre_operation, String next_operation, int status, String reason, String remark, String desc, Date create_time, String from_operator, String from_operator_id) {
