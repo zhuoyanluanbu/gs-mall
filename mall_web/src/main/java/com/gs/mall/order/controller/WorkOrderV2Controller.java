@@ -2,13 +2,23 @@ package com.gs.mall.order.controller;
 
 import com.gs.common.result.ResponseResult;
 import com.gs.mall.common.util.StringUtil;
+import com.gs.mall.export.ExportEngine;
 import com.gs.mall.order.dto.WorkOrderTableDisplayDto;
 import com.gs.mall.order.po.*;
 import com.gs.mall.order.service.WorkOrderV2Service;
 import com.gs.mall.order.service.impl.WorkOrderV2Exception;
+import com.gs.mall.params.adapter.TradeDetailDataAdapter;
+import com.gs.mall.params.adapter.WorkOrderFlowRecAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -181,6 +191,38 @@ public class WorkOrderV2Controller {
             wo_descriptions.add(WorkOrderFlowRecDescription.instanceForManager(wofr));
         }
         return ResponseResult.successInstance().setData(wo_descriptions);
+    }
+
+
+    @Resource(name="excelEngine")
+    ExportEngine exportEngine;
+    @Autowired
+    WorkOrderFlowRecAdapter workOrderFlowRecAdapter;
+    /*
+    * 后台导出工单
+    * @param orderIdOrWoId
+    * @return
+    * */
+    @RequestMapping(value = "/back/workOrder/workOrderFlowRecs/export",method = RequestMethod.POST)
+    public void wordOrderFlowsDescription(@RequestBody WorkOrderTableDisplayDto workOrderTableDisplayDto,
+                                                    HttpServletResponse response){
+        try {
+
+            List<WorkOrderTableDisplayData> workOrderTableDisplayDatas = workOrderV2Service.getWorkOrderTableDisplayData(workOrderTableDisplayDto);
+            File file = exportEngine.createExportFile(exportEngine.genFile(workOrderTableDisplayDatas,workOrderFlowRecAdapter));
+            FileInputStream in = new FileInputStream(file.getPath());
+            response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(file.getName(), "UTF-8"));
+            OutputStream out = response.getOutputStream();
+            int len = 0;
+            byte[] bytes = new byte[1024];
+            while( (len=in.read(bytes)) > 0){
+                out.write(bytes,0,len);
+            }
+            in.close();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     //-------------------------------------------------------------------------------------
     //-------------------------------------------------------------------------------------

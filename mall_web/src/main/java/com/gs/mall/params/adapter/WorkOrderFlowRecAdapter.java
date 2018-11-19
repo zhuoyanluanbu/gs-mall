@@ -12,16 +12,19 @@ import com.gs.mall.finance.po.TradeDetail;
 import com.gs.mall.order.po.WorkOrderFlowRec;
 import com.gs.mall.order.po.WorkOrderTableDisplayData;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by huyoucheng on 2018/11/12.
  */
+@Component
 public class WorkOrderFlowRecAdapter implements ExcelFileAdapter {
 
     @Value("${oss.test.env}")
@@ -38,7 +41,7 @@ public class WorkOrderFlowRecAdapter implements ExcelFileAdapter {
         List<WorkOrderTableDisplayData>  wofr = (List<WorkOrderTableDisplayData>) data;
         ExportFile exportFile = new ExportFile();
         exportFile.setType(ExcelEngine.FILE_TYPE);
-        String filName = "工单"+System.currentTimeMillis();
+        String filName = "WorkOrder_"+ new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
         File dir = new File(exportFilePath);
         if ( ! dir.exists() ) {
             dir.mkdirs();
@@ -59,24 +62,17 @@ public class WorkOrderFlowRecAdapter implements ExcelFileAdapter {
         row.setCells(cells);
         rows.add(row);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        for (WorkOrderFlowRec w:wofr) {
+        for (WorkOrderTableDisplayData w:wofr) {
             row = new ExcelRow(rowIndex++);
             colIndex =0;
-            cells = new ArrayList<>(7);
-            //状态
-//            cells.add(new ExcelCell(colIndex++, sdf.format(tradDetail.getCreateTime()), ExcelStyleFactory.defStyle()));
-//            //申请时间
-//            cells.add(new ExcelCell(colIndex++, null, ExcelStyleFactory.defStyle()));
-//            //商品订单编号
-//            cells.add(new ExcelCell(colIndex++, null, ExcelStyleFactory.defStyle()));
-//            //退款金额
-//            cells.add(new ExcelCell(colIndex++, null, ExcelStyleFactory.defStyle()));
-//            //退款申请说明
-//            cells.add(new ExcelCell(colIndex++, null, ExcelStyleFactory.defStyle()));
-//            //申请发起人
-//            cells.add(new ExcelCell(colIndex++, null, ExcelStyleFactory.defStyle()));
-//            //操作人
-//            cells.add(new ExcelCell(colIndex++,null,ExcelStyleFactory.defStyle()));
+            cells = new ArrayList<>(5);
+            cells.add(new ExcelCell(colIndex++,w.getWo_id(),ExcelStyleFactory.defStyle()));
+            cells.add(new ExcelCell(colIndex++,
+                    (w.getCustomerName()+"（"+w.getCustomerTel()+"）").equals("（）")?"":(w.getCustomerName()+"（"+w.getCustomerTel()+"）"),
+                    ExcelStyleFactory.defStyle()));
+            cells.add(new ExcelCell(colIndex++,w.getDesc(),ExcelStyleFactory.defStyle()));
+            cells.add(new ExcelCell(colIndex++,w.getCreate_time()!=null?sdf.format(w.getCreate_time()):"",ExcelStyleFactory.defStyle()));
+            cells.add(new ExcelCell(colIndex++,w.getOperator()+"（"+w.getOperator_id()+"）",ExcelStyleFactory.defStyle()));
             row.setCells(cells);
             rows.add(row);
         }

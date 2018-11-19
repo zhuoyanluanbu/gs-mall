@@ -30,6 +30,24 @@ public class WorkOrderV2 extends MyObject {
     private int state;//状态
     private String remark;//备注
     private int isDel;//是否后台删除
+    private String customerName;
+    private String customerTel;
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getCustomerTel() {
+        return customerTel;
+    }
+
+    public void setCustomerTel(String customerTel) {
+        this.customerTel = customerTel;
+    }
 
     public int getId() {
         return id;
@@ -162,7 +180,10 @@ public class WorkOrderV2 extends MyObject {
     public WorkOrderV2() {
     }
 
-    public WorkOrderV2(int id, String order_id, String wo_id, String wo_reason, String fromid, String fromname, String fromphone, int fromwhere, Date createtime, int isrefund, String imgurl0, String imgurl1, String imgurl2, int state, String remark, int isDel) {
+    public WorkOrderV2(int id, String order_id, String wo_id, String wo_reason, String fromid,
+                       String fromname, String fromphone, int fromwhere, Date createtime, int isrefund,
+                       String imgurl0, String imgurl1, String imgurl2, int state, String remark, int isDel,
+                       String customerName,String customerTel) {
         this.id = id;
         this.order_id = order_id;
         this.wo_id = wo_id;
@@ -179,6 +200,8 @@ public class WorkOrderV2 extends MyObject {
         this.state = state;
         this.remark = remark;
         this.isDel = isDel;
+        this.customerName = customerName;
+        this.customerTel = customerTel;
     }
 
     public WorkOrderV2(String wo_id,int state) {

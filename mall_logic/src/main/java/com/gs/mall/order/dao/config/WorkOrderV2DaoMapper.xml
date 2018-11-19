@@ -18,10 +18,12 @@
         <result column="state" property="state" />
         <result column="remark" property="remark" />
         <result column="isDel" property="isDel" />
+        <result column="customerName" property="customerName" />
+        <result column="customerTel" property="customerTel" />
     </resultMap>
     <sql id="Base_Column_List">
         id,order_id,wo_id,wo_reason,fromid,fromname,fromphone,fromwhere,createtime,isrefund,
-         imgurl0,imgurl1,imgurl2,state,remark,isDel
+         imgurl0,imgurl1,imgurl2,state,remark,isDel,customerName,customerTel
     </sql>
     <sql id="table_name">gs_work_order_new</sql>
     <sql id="select_query_sql">
@@ -53,6 +55,12 @@
             <if test="params.remark != null">
                 and remark = #{params.remark}
             </if>
+            <if test="params.customerName != null">
+                and customerName = #{params.customerName}
+            </if>
+            <if test="params.customerTel != null">
+                and customerTel = #{params.customerTel}
+            </if>
             <if test="params.beginDate != null">
                 and createtime &gt;= #{params.beginDate}
             </if>
@@ -67,7 +75,7 @@
             keyProperty="id">
         INSERT INTO <include refid="table_name" />(<include refid="Base_Column_List"/>)
         VALUES(0,#{order_id},#{wo_id},#{wo_reason},#{fromid},#{fromname},#{fromphone},#{fromwhere},
-        #{createtime}, #{isrefund}, #{imgurl0},#{imgurl1},#{imgurl2},0,#{remark},0)
+        #{createtime}, #{isrefund}, #{imgurl0},#{imgurl1},#{imgurl2},0,#{remark},0,#{customerName},#{customerTel})
         <selectKey resultType="int" keyProperty="id" order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
@@ -101,7 +109,13 @@
                 state = #{state},
             </if>
             <if test="remark != null">
-                remark = #{remark}
+                remark = #{remark},
+            </if>
+            <if test="customerName != null">
+                customerName = #{customerName},
+            </if>
+            <if test="customerTel != null">
+                customerTel = #{customerTel}
             </if>
         </set>
         WHERE wo_id=#{wo_id}
@@ -109,6 +123,10 @@
 
     <select id="selectById" parameterType="int" resultMap="WorkOrderV2">
         SELECT * from <include refid="table_name" /> WHERE id=#{id}
+    </select>
+
+    <select id="selectByWoId" parameterType="String" resultMap="WorkOrderV2">
+        SELECT * from <include refid="table_name" /> WHERE wo_id=#{wo_id}
     </select>
 
     <select id="selectByParam" resultMap="WorkOrderV2">

@@ -153,12 +153,12 @@
     </resultMap>
     <select id="getWorkOrderTableDisplayData" parameterType="com.gs.mall.order.dto.WorkOrderTableDisplayDto" resultMap="WorkOrderTableDisplay">
         select e.price as refundAmount,e.num as num,e.points as refundPoints,f.id,
-          f.wo_id,f.order_id,f.status,f.operation,f.operation_time,f.create_time,
+          f.wo_id,f.order_id,f.customerName,f.customerTel,f.status,f.operation,f.operation_time,f.create_time,
           f.logistics,f.reason,f.from_operator,f.from_operator_id,
           f.operator,f.operator_id,f.own as owner
           from gs_refund_commodity e
           RIGHT join
-          (SELECT c.id,c.wo_id,d.order_id,c.status,c.operation,c.operation_time,c.create_time,c.logistics,c.reason,c.from_operator,
+          (SELECT c.id,c.wo_id,d.order_id,d.customerName,d.customerTel,c.status,c.operation,c.operation_time,c.create_time,c.logistics,c.reason,c.from_operator,
               c.from_operator_id,c.operator,c.operator_id,c.own from
             (SELECT a.*,b.own from gs_work_order_flow_rec a right join (SELECT operation,own from gs_work_order_flow
               <where><if test="owner != null">OWN LIKE CONCAT('%',#{owner},'%')</if></where>) b
@@ -181,7 +181,7 @@
             on c.wo_id=d.wo_id ) f
         on f.wo_id=e.wo_id
         WHERE f.id IS NOT NULL
-        ORDER BY f.order_id DESC,f.id DESC
+        ORDER BY f.order_id DESC,f.id ASC
     </select>
 
 

@@ -76,6 +76,9 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
     @Override
     @Transactional
     public Boolean submitWorkOrder(WorkOrderV2 workOrderV2, RefundCommodity refundCommodity,String other) throws WorkOrderV2Exception{
+        if(workOrderV2Dao.selectByWoId(workOrderV2.getWo_id()) != null){
+            return (workOrderV2Dao.update(workOrderV2) | refundCommodityDao.update(refundCommodity)) == 1;
+        }
         if (workOrderV2Dao.insert(workOrderV2) > 0) {
             Map<String,WorkOrderFlow> workOrderFlowMap = this.getAllWorkOrderFlowsMap();
             WorkOrderFlowRec workOrderFlowRec;
@@ -419,6 +422,8 @@ public class WorkOrderV2ServiceImpl implements WorkOrderV2Service {
                     WorkOrderFlowRecDescription.instanceForManager(wotdd.getOperation(),wotdd.getStatus(),wotdd.getLogistics(), wotdd.getReason());
             wotdd.setDesc(workOrderFlowRecDescription.getDescription());
         }
+//        Map<String,List<WorkOrderTableDisplayData>> map = workOrderTableDisplayDataListAllOrderIds.stream().collect(Collectors.groupingBy(WorkOrderTableDisplayData::getWo_id));
+
         return workOrderTableDisplayDataListAllOrderIds;
     }
 
